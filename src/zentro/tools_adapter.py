@@ -51,6 +51,7 @@ class ToolAdapter:
         self.observation=0
         self.attempt_cache={}
         self.tickets=set()
+        self.ticket_uncertain=None
     def observe(self,text):
         self.observation+=1
         values=caller_numbers(text)
@@ -101,7 +102,13 @@ class ToolAdapter:
             self.attempt_cache[cache_key]=result
             return result
         if name=='create_ticket':
-            result=self.module.create_ticket(summary=self.sanitize(args['summary']),order_id=self.current_order,reason=self.sanitize(args.get('reason') or ''))
+            # After a timeout the write may have landed; retrying could file duplicates, so later calls get the same answer.
+            if self.ticket_uncertain: return self.ticket_uncertain
+            try:
+                result=self.module.create_ticket(summary=self.sanitize(args['summary']),order_id=self.current_order,reason=self.sanitize(args.get('reason') or ''))
+            except (TimeoutError,ConnectionError) as exc:
+                self.ticket_uncertain={'created':False,'uncertain':True,'error':f'{exc}. The ticket may or may not have been saved; do not retry.'}
+                return self.ticket_uncertain
             if result.get('created'): self.tickets.add(result['ticket_id'])
             return result
         raise ValueError('Unknown tool')

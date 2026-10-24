@@ -33,7 +33,10 @@ def unsupported_action(sentence,verified=False):
     if SELF_ACTION.search(sentence): return True
     state=CASE_STATE.search(sentence)
     # Policy explanations ("once your refund has been initiated, ...") describe rules, not actions taken.
-    return bool(state) and not verified and not CONDITIONAL.search(sentence[:state.start()])
+    if not state or verified or CONDITIONAL.search(sentence[:state.start()]): return False
+    # So does a present-tense rule with its timing ("your refund is initiated at pickup").
+    return not (re.search(r'\bis\s',state[0]) and 'been' not in state[0]
+                and re.match(r'\s+(?:at|on|within|when|after|once|immediately|by|from)\b',sentence[state.end():],re.I))
 
 def guard_reply(reply,calls,chunks,first=False,verified=False,session_tickets=()):
     created=[c['result'] for c in calls if c['name']=='create_ticket' and c['result'].get('created') is True]
@@ -50,7 +53,9 @@ def guard_reply(reply,calls,chunks,first=False,verified=False,session_tickets=()
         if unsupported_action(sentence,verified): continue
         if re.search(r'(?:refund|रिफंड|order|ऑर्डर|pickup|पिकअप|compensation).{0,35}(?:kar diya|कर दिया|कर दी|प्रोसेस कर|रद्द कर)',sentence,re.I): continue
         if not created and re.search(r'(?:ticket|टिकट|handover).{0,30}(?:bana diya|बना दिया|बना दी|bhej diya|भेज दिया)',sentence,re.I): continue
-        if ticket_claim.search(sentence) and not created and not any(t in sentence for t in session_tickets): continue
+        # An offer to hand over ("I can connect you with a human") is not a claim that it happened.
+        offer=re.search(r"\b(?:can|could|may|will gladly)\s+(?:connect|escalate|hand|raise|transfer)|would you like|shall I",sentence,re.I)
+        if ticket_claim.search(sentence) and not offer and not created and not any(t in sentence for t in session_tickets): continue
         removed=False
         safe.append(sentence)
     reply=' '.join(safe).strip()

@@ -16,3 +16,4 @@ BUILD_PROMPT.md
 *.pdf
 !report.pdf
 .claude/
+eval/results/*.partial.json

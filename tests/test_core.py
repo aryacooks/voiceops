@@ -141,3 +141,22 @@ def test_short_reply_while_awaiting_verification_is_proof():
     assert {'0110','0101'}<=adapter.proof_values
     adapter.observe('the refund was due in 2026 but it never came and nobody called me back')
     assert '2026' not in adapter.proof_values
+
+def test_ticket_timeout_is_not_retried(monkeypatch):
+    adapter=ToolAdapter(Search());calls=[]
+    def slow(**k): calls.append(k); raise TimeoutError('ticket service timed out')
+    monkeypatch.setattr(adapter.module,'create_ticket',slow)
+    for _ in range(3):
+        result=adapter.execute('create_ticket',{'summary':'Customer asked for a human agent about a late order'})
+        assert result['created'] is False and result['uncertain']
+    assert len(calls)==1 and not adapter.tickets
+
+def test_present_tense_refund_rule_is_not_an_action_claim():
+    reply=guard_reply('As a Plus member, your refund is initiated at pickup, but a card refund takes 5–7 business days [REF-2].',[],[{'section_id':'REF-2'}])
+    assert 'initiated at pickup' in reply
+    assert 'has been initiated' not in guard_reply('Your refund has been initiated [REF-2].',[],[{'section_id':'REF-2'}])
+
+def test_offer_to_hand_over_survives_without_a_ticket():
+    reply=guard_reply("I don't have information about refunds sent to a closed bank account, but I can connect you with a human colleague to check. Would you like me to?",[],[])
+    assert 'connect you with a human colleague' in reply
+    assert 'escalated' not in guard_reply('I have escalated this to a human agent.',[],[])
