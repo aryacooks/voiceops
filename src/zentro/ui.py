@@ -336,9 +336,14 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
 #conversation .placeholder-content { padding: 20px; }
 #conversation .top-panel, #conversation .icon-button-wrapper.top-panel { display: none !important; }
 #conversation .avatar-container { display: none !important; }
-#conversation .message-row { margin: 3px 0 !important; }
+/* The width cap sits on the row: a % cap on the bubble would be relative to its own shrink-wrapped row. */
+#conversation .message-row { margin: 3px 0 !important; max-width: 80% !important; }
 #conversation .message { font-size: 15px !important; line-height: 1.6 !important; border-radius: 18px !important;
-    box-shadow: none !important; padding: 10px 15px !important; max-width: 80%; }
+    box-shadow: none !important; padding: 10px 15px !important; max-width: 100% !important;
+    overflow-wrap: break-word; word-break: normal; }
+/* Gradio nests a second .message inside each bubble; only the outer one is the bubble. */
+#conversation .message .message { padding: 0 !important; max-width: none !important; width: auto !important;
+    border: 0 !important; border-radius: 0 !important; background: transparent !important; }
 #conversation .message p { margin: 0 !important; }
 #conversation .user { background: #211e1b !important; border: 0 !important; border-bottom-right-radius: 6px !important; }
 #conversation .user, #conversation .user * { color: #fbf8f3 !important; }
@@ -492,7 +497,7 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
 #app-footer p { font-size: 11px; color: #75695d; margin: 0; text-align: center; }
 @media (max-width: 640px) {
     .gradio-container { padding: 0 12px 18px !important; }
-    #conversation .message { max-width: 90%; }
+    #conversation .message-row { max-width: 90% !important; }
     .zm-sub { display: none; }
     #zm-hint { display: none; }
 }
