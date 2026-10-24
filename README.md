@@ -90,6 +90,8 @@ The local Gradio app has a microphone/upload path, typed follow-ups, persistent 
 
 Question evaluation uses all 52 noisy `asr_text` prompts, logs Step 1 vs Step 2 separately, computes macro evidence recall@5, and uses an LLM judge for correctness and insufficient-evidence behavior on unanswerable items. Native-script/spoken/date equivalence is judged semantically. Conversation evaluation replays 96 turns in 23 sessions, judges decisions and checks expected tool names/arguments using ephemeral raw arguments (proof never exported). Expected leading-zero proof values stay strings. Gold labels are read only by the evaluation scripts, never by the runtime agent.
 
+**Hosted demo:** https://aryabysani--voiceops-web.us-east.modal.run (Modal; it sleeps when idle, so the first load takes up to a minute). To host your own copy, create a Modal secret `voiceops` with `LLM_API_KEY` and `GNANI_API_KEY`, extract the dataset, build the index, then run `modal deploy modal_app.py`.
+
 When no keys exist, retrieval scores still run and answer/judge scores are explicitly null/not run. `eval/results/summary.md` and `conversation_summary.json` record that distinction. LLM judging is model-dependent and should be checked manually on failures; retrieval recall does not establish answer correctness.
 
 ## Verification and limitations

@@ -60,7 +60,13 @@ class ToolAdapter:
             r'|(?:four|4|चार).{0,12}(?:digits?|अंक)|पिन|फोन|फ़ोन',text,re.I)
         compact=re.sub(r'[\d\s.,-]','',text).lower()
         standalone=compact in ('','haan','yes','its',"it's",'hai') or all(word in {'zero','oh','one','two','three','four','five','six','seven','eight','nine'} for word in text.lower().split())
-        if proof_context or standalone:
+        # A full phone number (optionally +91) is unambiguous in any wording ("my number is ...") and proves its last 4.
+        full=[v for v in values if len(v)==10 or (len(v)==12 and v.startswith('91'))]
+        self.proof_values.update(v[-4:] for v in full)
+        self.secrets.update(full)
+        # A short reply while an order awaits verification is the answer ("0110, sorry I mean 0101").
+        awaiting=self.current_order and self.current_order not in self.verified_orders and len(text.split())<=8
+        if proof_context or standalone or awaiting:
             submitted={v for v in values if len(v) in (4,6)}
             self.proof_values.update(submitted)
             self.secrets.update(submitted)
@@ -74,6 +80,7 @@ class ToolAdapter:
         if name=='is_pincode_serviceable': return is_pincode_serviceable(args['pincode'])
         if name=='lookup_order':
             oid=re.sub(r'\D','',str(args['order_id']))
+            if len(oid)!=8: return {'error':'Order IDs are 8 digits; ask the caller to re-check it.'}
             if oid not in self.caller_values: return {'error':'Ask caller for the order ID; do not infer it.'}
             if oid in self.verified_orders: return self.verified_orders[oid]
             cache_key=(oid,self.observation,args.get('phone_last4') or args.get('pincode'))
@@ -82,6 +89,7 @@ class ToolAdapter:
             proof=args.get('phone_last4') or args.get('pincode')
             if proof:
                 proof=re.sub(r'\D','',str(proof))
+                if len(proof)==10 or (len(proof)==12 and proof.startswith('91')): proof=proof[-4:]
                 if proof not in self.proof_values or len(proof) not in (4,6):
                     return {'error':'Verification value must be supplied by this caller, not guessed.'}
             if proof: self.secrets.add(proof)
@@ -115,7 +123,7 @@ def redact(text,secrets=()):
         text=re.sub(r'(?<![0-9A-Za-z])'+r'[ -]*'.join(re.escape(c) for c in secret)+r'(?![0-9A-Za-z])','[verification redacted]',text)
     text=re.sub(r'[\w.+-]+@[\w.-]+\.[a-zA-Z]+','[email redacted]',text)
     # Alphanumeric boundaries keep digit runs inside ticket IDs (TKT…) intact.
-    text=re.sub(r'(?<![0-9A-Za-z])(?:\+91[ -]?)?\d{10}(?![0-9A-Za-z])','[phone redacted]',text)
+    text=re.sub(r'(?<![0-9A-Za-z])(?:\+91[ -]?)?(?:\d{10}|\d{5}[ -]\d{5}|\d{3}[ -]\d{3}[ -]\d{4})(?![0-9A-Za-z])','[phone redacted]',text)
     return text
 
 def audit_call(name,args,result):

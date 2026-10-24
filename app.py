@@ -144,5 +144,11 @@ def build_app():
         reset.click(lambda:([],inspector.render(),'',None),outputs=[chat,panel,status,state])
     return demo
 if __name__=='__main__':
+    import os
+    import threading
+    from zentro.retriever import encoder
     REPLY_DIR.mkdir(parents=True,exist_ok=True)
-    build_app().launch(server_name='127.0.0.1',share=False,allowed_paths=[str(REPLY_DIR)])
+    # Load the embedding model while the page opens, so the first question is not the slow one.
+    threading.Thread(target=encoder,daemon=True).start()
+    # Hosted platforms (Hugging Face Spaces) set GRADIO_SERVER_NAME=0.0.0.0; locally the demo stays on loopback.
+    build_app().launch(server_name=os.getenv('GRADIO_SERVER_NAME','127.0.0.1'),share=False,allowed_paths=[str(REPLY_DIR)])

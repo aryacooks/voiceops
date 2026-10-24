@@ -111,3 +111,33 @@ def test_ticket_id_digits_are_not_redacted_as_phone():
     ticket='TKT'+'4500012345'+'a'*22
     assert redact('your ticket ID is '+ticket)=='your ticket ID is '+ticket
     assert redact('call 9876543210')=='call [phone redacted]'
+
+def test_malformed_order_id_is_rejected_without_a_lookup(monkeypatch):
+    adapter=ToolAdapter(Search());adapter.observe('my order 1001 is late')
+    monkeypatch.setattr(adapter.module,'lookup_order',lambda *a,**k:pytest.fail('lookup ran'))
+    assert '8 digits' in adapter.execute('lookup_order',{'order_id':'1001'})['error']
+    assert adapter.public_state()['verification_failures']==0
+
+def test_full_phone_number_verifies_by_its_last_four(monkeypatch):
+    adapter=ToolAdapter(Search());adapter.observe('My order 12345678')
+    seen=[]
+    monkeypatch.setattr(adapter.module,'lookup_order',lambda order_id,verification_value=None:seen.append(verification_value) or {'verified':True})
+    adapter.observe('my phone number is +91 98765 43210')
+    assert adapter.execute('lookup_order',{'order_id':'12345678','phone_last4':'+919876543210'})['verified']
+    assert seen==['3210']
+    assert '98765' not in adapter.sanitize('you said 9876543210 and +91 98765 43210')
+
+def test_spaced_phone_numbers_are_redacted_anywhere():
+    for number in ('98765 43210','+91 98765 43210','987-654-3210','+91-9876543210'):
+        assert redact('reach me on '+number)=='reach me on [phone redacted]'
+
+def test_full_phone_counts_as_proof_without_the_word_phone():
+    adapter=ToolAdapter(Search());adapter.observe('my number is +91 98765 43210')
+    assert '3210' in adapter.proof_values
+
+def test_short_reply_while_awaiting_verification_is_proof():
+    adapter=ToolAdapter(Search());adapter.observe('my order 12345678 is late')
+    adapter.observe('0110 sorry I mean 0101')
+    assert {'0110','0101'}<=adapter.proof_values
+    adapter.observe('the refund was due in 2026 but it never came and nobody called me back')
+    assert '2026' not in adapter.proof_values
