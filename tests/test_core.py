@@ -99,3 +99,15 @@ def test_ticket_from_earlier_turn_stays_confirmed():
     tid='TKT'+'4533'+'e'*28
     reply=guard_reply(f'Your ticket ID is {tid}.',[],[],session_tickets={tid})
     assert tid in reply and 'unconfirmed' not in reply
+
+
+def test_headphones_year_is_not_treated_as_proof():
+    adapter=ToolAdapter(None)
+    adapter.observe('my headphones were delivered on 25 july 2026')
+    assert adapter.sanitize('delivered on 25 July 2026')=='delivered on 25 July 2026'
+
+
+def test_ticket_id_digits_are_not_redacted_as_phone():
+    ticket='TKT'+'4500012345'+'a'*22
+    assert redact('your ticket ID is '+ticket)=='your ticket ID is '+ticket
+    assert redact('call 9876543210')=='call [phone redacted]'

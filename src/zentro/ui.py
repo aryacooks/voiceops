@@ -79,8 +79,8 @@ CSS = """
 :root, body, .dark { color-scheme: light; background: #f4f0e9 !important; }
 body { margin: 0; -webkit-font-smoothing: antialiased; }
 .gradio-container {
-    width: 100% !important; max-width: 1240px !important;
-    margin: 0 auto !important; padding: 0 36px 24px !important;
+    width: 100% !important; max-width: 860px !important;
+    margin: 0 auto !important; padding: 0 20px 24px !important;
     font-family: 'Helvetica Neue', Arial, sans-serif !important;
     color: #211e1b !important; background: #f4f0e9 !important;
 }
@@ -91,75 +91,69 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
 .gradio-container button:focus-visible, .gradio-container textarea:focus-visible {
     outline: 2px solid #7b5d47 !important; outline-offset: 3px !important;
 }
-.gradio-container button:active { transform: translateY(1px); }
-.gradio-container textarea { font-size: 14px !important; line-height: 1.55 !important; }
 .gradio-container label > span { background: transparent !important; }
-#topbar { background: transparent; border-bottom: 1px solid #dcd4c9; padding: 22px 0 18px; }
-.brandbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.brand { font-size: 23px; font-weight: 650; letter-spacing: -1px; line-height: 1; }
-.brand-detail { color: #726253; font-size: 12px; letter-spacing: .01em; }
-#intro { background: transparent; padding: 22px 0 18px; }
-#intro h1 { font-size: clamp(30px, 3.2vw, 42px); font-weight: 500; line-height: 1.12; letter-spacing: -1.6px; margin: 0 0 12px; }
-#intro p { color: #756b62; font-size: 14px; line-height: 1.6; margin: 0; }
-#workspace {
-    gap: 0 !important; background: #ffffff; border: 1px solid #ddd5ca;
-    border-radius: 12px; overflow: hidden; align-items: stretch;
-}
-#conversation-panel { padding: 24px 28px 20px; min-width: 0 !important; gap: 16px; }
-#session-panel { padding: 25px 24px 24px; min-width: 0 !important; border-left: 1px solid #e7e0d7; gap: 16px; }
-#conversation-heading { align-items: center; flex-wrap: nowrap; gap: 12px; }
-.panel-title { margin: 0; font-size: 16px; font-weight: 550; letter-spacing: -.35px; line-height: 1.5; }
-#reset { flex: 0 0 auto; min-width: 0 !important; width: auto !important; padding: 7px 11px; font-size: 11px; height: 32px; }
-#conversation { background: #ffffff !important; border: 0 !important; padding: 0 !important; border-radius: 0 !important; }
-#conversation .bubble-wrap { padding: 0 !important; }
+
+/* Header */
+#topbar { align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 12px;
+    padding: 18px 0 14px; border-bottom: 1px solid #dcd4c9; background: transparent; }
+.brand { font-size: 21px; font-weight: 650; letter-spacing: -.8px; line-height: 1.2; }
+.brand-detail { display: block; color: #726253; font-size: 12px; font-weight: 400; letter-spacing: .01em; margin-top: 2px; }
+#reset { flex: 0 0 auto; width: auto !important; min-width: 0 !important; padding: 7px 12px; font-size: 12px; }
+
+/* Conversation */
+#conversation { background: transparent !important; border: 0 !important; padding: 8px 0 0 !important; }
+#conversation .bubble-wrap { padding: 8px 0 !important; background: transparent !important; }
 #conversation .placeholder-content { padding: 20px; }
+#conversation .message { font-size: 15px !important; line-height: 1.6 !important; border-radius: 16px !important;
+    box-shadow: none !important; padding: 10px 14px !important; max-width: 82%; }
+#conversation .user { background: #211e1b !important; color: #fbf8f3 !important; border: 0 !important;
+    border-bottom-right-radius: 4px !important; }
+#conversation .bot { background: #ffffff !important; color: #211e1b !important; border: 1px solid #e3dcd2 !important;
+    border-bottom-left-radius: 4px !important; }
+#conversation .user * { color: #fbf8f3 !important; }
+#conversation .top-panel, #conversation .icon-button-wrapper.top-panel { display: none !important; }
+.typing { color: #8c7762; font-style: italic; white-space: nowrap;animation: typing 1.4s ease-in-out infinite; }
+@keyframes typing { 50% { opacity: .45; } }
+#conversation .bot audio { width: 260px; max-width: 100%; height: 36px; }
+#conversation .avatar-container { display: none !important; }
+.cite { display: inline-block; margin: 0 2px; padding: 0 6px; border-radius: 999px; background: #eee6db;
+    color: #6c5440; font-size: 11px; font-weight: 500; line-height: 18px; vertical-align: 1px; }
 .conversation-empty { text-align: center; color: #8c7762; }
-.empty-title { font-size: 23px; font-weight: 450; letter-spacing: -.7px; color: #6c5440; margin-bottom: 10px; }
-.empty-description { max-width: 270px; margin: 0 auto; color: #817264; font-size: 13px; line-height: 1.7; }
-#conversation .message { font-size: 14px !important; line-height: 1.65 !important; border-radius: 8px !important; box-shadow: none !important; }
-#conversation .user { background: #eee6db !important; color: #352a21 !important; }
-#conversation .bot { background: #f8f5f0 !important; color: #211e1b !important; }
-#composer { gap: 12px; align-items: end; flex-wrap: nowrap; }
-#message-input { min-width: 0 !important; }
-#message-input textarea { background: #f8f5f0 !important; min-height: 72px; padding: 12px 14px !important; }
-#send { flex: 0 0 146px; min-width: 146px !important; height: 72px; padding: 12px; }
-#voice-input { border-top: 1px solid #e7e0d7; padding-top: 15px; background: transparent !important; }
-#voice-input > button { padding: 0 !important; font-size: 12px; font-weight: 500; }
-#voice-input > div { padding: 16px 0 0 !important; }
-#microphone { border: 1px solid #e3dcd2 !important; border-radius: 6px !important; padding: 10px !important; background: #f8f5f0 !important; }
-#microphone .record-button { color: #674c38 !important; }
-#transcript textarea, #session-status textarea { padding: 11px 12px !important; background: #f8f5f0 !important; border-color: transparent !important; }
-#session-status textarea { color: #6c5440 !important; font-size: 12px !important; }
-#reply-audio { min-height: 90px; }
-#reply-audio audio { width: 100%; }
-.detail-disclosure { border-top: 1px solid #e7e0d7 !important; padding-top: 15px !important; background: transparent !important; }
-.detail-disclosure > button { padding: 0 !important; font-size: 12px; font-weight: 500; }
-.detail-disclosure > div { padding: 16px 0 0 !important; }
-#evidence, #tool-calls { max-height: 320px !important; overflow: auto; background: #f8f5f0 !important; border-radius: 6px; }
+.empty-title { font-size: 26px; font-weight: 450; letter-spacing: -.8px; color: #6c5440; margin-bottom: 10px; }
+.empty-description { max-width: 320px; margin: 0 auto; color: #817264; font-size: 14px; line-height: 1.7; }
+
+/* Composer: one pill with attach, mic and send */
+#composer { background: #ffffff !important; border: 1px solid #ddd5ca !important; border-radius: 26px !important;
+    padding: 6px 8px 6px 10px !important; box-shadow: 0 1px 2px rgba(33,30,27,.04) !important; }
+#composer textarea { background: transparent !important; border: 0 !important; font-size: 15px !important;
+    padding: 10px 6px !important; }
+#composer button { border-radius: 999px !important; }
+#composer .submit-button { background: #211e1b !important; color: #fff !important; }
+#composer .submit-button:hover { background: #674c38 !important; }
+#composer .microphone-button, #composer .upload-button { color: #674c38 !important; }
+#composer .record-button, #composer .stop-button { color: #674c38 !important; }
+#session-status { padding: 6px 16px 0; background: transparent; }
+#session-status p { font-size: 12px; color: #817264; margin: 0; }
+#autoplay { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important;
+    opacity: 0 !important; pointer-events: none !important; }
+
+/* Behind the scenes */
+#details { margin-top: 18px; border-top: 1px solid #dcd4c9 !important; padding-top: 14px !important; background: transparent !important; }
+#details > button { padding: 0 !important; font-size: 13px; font-weight: 550; color: #45392e; }
+#details > div { padding: 14px 0 0 !important; }
+.details-note p { font-size: 12px; line-height: 1.6; color: #817264; margin: 0 0 4px; }
+#transcript textarea { padding: 11px 12px !important; background: #ffffff !important; border-color: #e3dcd2 !important; }
+#evidence, #tool-calls { overflow: auto; background: #ffffff !important; border: 1px solid #e3dcd2 !important; border-radius: 8px; }
 #evidence *, #tool-calls * { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 11px; color: #71563f !important; }
 #evidence .json-node, #tool-calls .json-node { background: transparent !important; }
 #evidence .key, #tool-calls .key { color: #352a21 !important; font-weight: 500; }
-#evidence .punctuation, #tool-calls .punctuation { color: #817264 !important; }
-#inspect { background: #eee6db !important; color: #5e4532 !important; border-color: #eee6db !important; min-height: 40px; font-size: 12px; }
+#inspect { background: #eee6db !important; color: #5e4532 !important; border-color: #eee6db !important; min-height: 38px; font-size: 12px; }
 #inspect:hover { background: #e5d8c8 !important; }
-#inspect-note { margin-top: -13px; background: transparent; }
-#inspect-note p { font-size: 11px; line-height: 1.6; color: #817264; margin: 0; }
-#app-footer { background: transparent; padding: 17px 0 0; }
+#app-footer { background: transparent; padding: 18px 0 0; }
 #app-footer p { font-size: 11px; color: #75695d; margin: 0; }
-@media (max-width: 760px) {
-    .gradio-container { padding: 0 18px 22px !important; }
-    #topbar { padding: 22px 0 20px; }
-    .brand { font-size: 21px; }
-    .brand-detail { font-size: 11px; }
-    #intro { padding: 25px 0 21px; }
-    #intro h1 { letter-spacing: -1px; }
-    #workspace { flex-direction: column !important; }
-    #conversation-panel { padding: 20px 18px; }
-    #session-panel { border-left: 0; border-top: 1px solid #e7e0d7; padding: 22px 18px; }
-    #conversation { height: 245px !important; }
-    #composer { gap: 8px; }
-    #send { flex-basis: 116px; min-width: 116px !important; font-size: 12px; }
-    .conversation-empty { max-width: 250px; }
+@media (max-width: 640px) {
+    .gradio-container { padding: 0 14px 20px !important; }
+    #conversation .message { max-width: 92%; }
 }
 @media (prefers-reduced-motion: reduce) {
     .gradio-container *, .gradio-container *::before, .gradio-container *::after { transition: none !important; animation: none !important; }
@@ -170,6 +164,6 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
 EMPTY_CONVERSATION = """
 <div class="conversation-empty">
     <div class="empty-title">Here to help.</div>
-    <p class="empty-description">Ask about an order, a return or a refund.<br>Your conversation starts here.</p>
+    <p class="empty-description">Ask about an order, a return or a refund.<br>Type below, or tap the mic and speak.</p>
 </div>
 """

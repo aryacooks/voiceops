@@ -56,7 +56,7 @@ class ToolAdapter:
         values=caller_numbers(text)
         self.caller_values.update(values)
         proof_context=re.search(
-            r'phone|pin\s*code|pincode|suffix|(?:last|aakhri|आख़िरी|आखिरी).{0,25}(?:four|4|चार|digits?|अंक)'
+            r'\bphone|pin\s*code|pincode|suffix|(?:last|aakhri|आख़िरी|आखिरी).{0,25}(?:four|4|चार|digits?|अंक)'
             r'|(?:four|4|चार).{0,12}(?:digits?|अंक)|पिन|फोन|फ़ोन',text,re.I)
         compact=re.sub(r'[\d\s.,-]','',text).lower()
         standalone=compact in ('','haan','yes','its',"it's",'hai') or all(word in {'zero','oh','one','two','three','four','five','six','seven','eight','nine'} for word in text.lower().split())
@@ -114,7 +114,8 @@ def redact(text,secrets=()):
         # Preserve ordinary years/amounts; redact only caller proof values in session.
         text=re.sub(r'(?<![0-9A-Za-z])'+r'[ -]*'.join(re.escape(c) for c in secret)+r'(?![0-9A-Za-z])','[verification redacted]',text)
     text=re.sub(r'[\w.+-]+@[\w.-]+\.[a-zA-Z]+','[email redacted]',text)
-    text=re.sub(r'(?<!\d)(?:\+91[ -]?)?\d{10}(?!\d)','[phone redacted]',text)
+    # Alphanumeric boundaries keep digit runs inside ticket IDs (TKT…) intact.
+    text=re.sub(r'(?<![0-9A-Za-z])(?:\+91[ -]?)?\d{10}(?![0-9A-Za-z])','[phone redacted]',text)
     return text
 
 def audit_call(name,args,result):

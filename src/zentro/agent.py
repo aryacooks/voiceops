@@ -26,7 +26,8 @@ DONE=r"(?:issued|processed|initiated|cancelled|canceled|scheduled|booked|credite
 SELF_ACTION=re.compile(r"\b(?:I|we)(?:'ve|\s+have|\s+had|\s+just|\s+already|\s+now|\s+successfully)*\s+(?:[a-z]+\s+){0,3}?"+DONE+r"\b",re.I)
 # A completed state of the customer's case ("your refund has been processed"); true only if read from a verified order.
 CASE_STATE=re.compile(r"\byour (?:refund|return|pickup|order|compensation|cancellation)\s+(?:has|have|was|is)\s+(?:already\s+|now\s+|successfully\s+)*(?:been\s+)?"+DONE+r"\b",re.I)
-CONDITIONAL=re.compile(r"\b(?:once|after|when|if|until|as soon as|jab|agar)\b",re.I)
+# Also covers restating the customer's own premise ("since you cancelled before shipping, your refund was initiated").
+CONDITIONAL=re.compile(r"\b(?:once|after|when|if|until|as soon as|since|because|jab|agar|kyunki)\b",re.I)
 
 def unsupported_action(sentence,verified=False):
     if SELF_ACTION.search(sentence): return True
@@ -41,11 +42,16 @@ def guard_reply(reply,calls,chunks,first=False,verified=False,session_tickets=()
     reply=re.sub(r'TKT[0-9a-f]+',lambda m:m[0] if m[0] in real_ids else '[unconfirmed ticket]',reply,flags=re.I)
     sentences=re.split(SENTENCE,reply)
     safe=[]
+    removed=False
     for sentence in sentences:
+        # Citations trailing a removed sentence ("... refunded. [REF-1]") go with it.
+        if removed and CITATION.search(sentence) and not CITATION.sub('',sentence).strip(' .,;:!?।'): continue
+        removed=True
         if unsupported_action(sentence,verified): continue
         if re.search(r'(?:refund|रिफंड|order|ऑर्डर|pickup|पिकअप|compensation).{0,35}(?:kar diya|कर दिया|कर दी|प्रोसेस कर|रद्द कर)',sentence,re.I): continue
         if not created and re.search(r'(?:ticket|टिकट|handover).{0,30}(?:bana diya|बना दिया|बना दी|bhej diya|भेज दिया)',sentence,re.I): continue
         if ticket_claim.search(sentence) and not created and not any(t in sentence for t in session_tickets): continue
+        removed=False
         safe.append(sentence)
     reply=' '.join(safe).strip()
     valid={c['section_id'] for c in chunks}
@@ -55,9 +61,10 @@ def guard_reply(reply,calls,chunks,first=False,verified=False,session_tickets=()
         cited=CITATION.findall(sentence)
         if cited and not set(cited)&valid: continue
         kept.append(CITATION.sub(lambda m:m[0] if m[1] in valid else '',sentence))
-    dropped=len(kept)<len(re.split(SENTENCE,reply))
+    dropped=len(kept)<len(re.split(SENTENCE,reply)) or len(safe)<len(sentences)
     reply=re.sub(r'\s+([.,!?])',r'\1',' '.join(kept)).strip()
-    if dropped and not created and (not reply or ungrounded(reply,chunks)): reply=IDK
+    only_intro=all(re.search(r'\bAI\b|एआई',s) for s in re.split(SENTENCE,reply))
+    if dropped and not created and (not reply or ungrounded(reply,chunks) or only_intro): reply=IDK
     if created:
         # A real handover is always confirmed with its ID, whatever else was filtered.
         ids=[r['ticket_id'] for r in created]

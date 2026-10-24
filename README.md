@@ -2,7 +2,7 @@
 
 A four-stage synthetic customer-support capstone: prompt-only baseline, cited hybrid RAG, verified conversational tools, and Gnani speech. The grading CLI and demo share the same agent. The frozen reference date is **20 October 2026**.
 
-**Status:** complete and evaluated live (24 October 2026) with Gnani STT/TTS and `openai/gpt-6-luna` via OpenRouter. Public GitHub URL: **TODO — add before submission**.
+**Status:** complete and evaluated live (24 October 2026) with Gnani STT/TTS and `openai/gpt-6-luna` via OpenRouter. Public GitHub URL: **https://github.com/aryacooks/voiceops**.
 
 ## Results
 

@@ -79,3 +79,19 @@ def test_spoken_ticket_and_punctuation():
     from zentro.speech import normalize_speech
     spoken = normalize_speech("No compensation applies [DEL-4]. Your ticket ID is TKT" + "0" * 28 + "5fbd.")
     assert "TKT" not in spoken and "ticket number ends in 5 F B D" in spoken and " ." not in spoken
+
+
+def test_premise_restatement_keeps_policy_answer():
+    chunks = [{"section_id": s} for s in ("CAN-1", "REF-1", "REF-2")]
+    raw = ("Since you cancelled before shipping, your refund was initiated immediately and reaches UPI "
+           "in 1–3 business days. [CAN-1] [REF-1] [REF-2]")
+    reply = guard_reply(raw, [], chunks, first=False)
+    assert "1–3 business days" in reply
+
+
+def test_dropped_claim_never_leaves_bare_citations():
+    chunks = [{"section_id": "REF-1"}]
+    raw = "I'm ZentroMart's AI support assistant. I have refunded your order. [REF-1]"
+    reply = guard_reply(raw, [], chunks, first=False)
+    assert "[REF-1]" not in reply
+    assert "don't have that information" in reply
