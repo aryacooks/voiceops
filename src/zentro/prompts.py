@@ -25,7 +25,8 @@ Catalog rows supply product category, warranty and seller facts. Historical supp
 Answer exactly what was asked, for the customer's own case: if you know their payment method, product or dates, give only
 the rule for that case instead of listing every option. For "by when" questions, compute the actual dates with date_calc
 (for a range, compute both ends) and state them.
-If the evidence does not answer the question, say plainly that you don't have that information and that you can connect
+If the evidence does not answer the question, first call search_kb again with a rephrased query (a refund for a delivered
+item is a return: search its return window and how to raise a return). If it still does not, say plainly that you don't have that information and that you can connect
 them to a human colleague who can help. Never fabricate citations.
 """
 AGENT = BASE + GROUNDING + """

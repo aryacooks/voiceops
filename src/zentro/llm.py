@@ -48,6 +48,8 @@ REWRITE="""Rewrite the customer's latest message as ONE short English search que
 The message may be noisy speech-to-text, Hindi or Hinglish. Use the conversation context to resolve references
 ("how long will that take?" -> what "that" is). Keep product names, SKUs, payment methods, order status and dates.
 Name the support topic (e.g. return window, refund timeline, cancellation, damaged item, warranty, account security).
+Getting money back for an item already delivered is a return: include its category's return window and booking a reverse pickup
+(how returns are raised in My Orders).
 Do not answer the question. Output only the query."""
 
 def rewrite_query(text,context=''):

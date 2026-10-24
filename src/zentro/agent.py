@@ -100,7 +100,8 @@ class Agent:
         if re.search('[\u0900-\u097f]',text): self.language='hi-IN'
         context=' | '.join(f"customer: {t['user']} / agent: {t['reply']}" for t in self.turns[-2:])
         query=self.rewrite(text,context) if self.rewrite else ''
-        chunks=self.retriever.search(text,rewrite=query) if query else self.retriever.search(text)
+        # Seven slots: the KB-00 rules attached to most results would otherwise crowd policy out of the top five.
+        chunks=self.retriever.search(text,k=7,rewrite=query) if query else self.retriever.search(text,k=7)
         calls=[audit_call('search_kb',{'query':self.adapter.sanitize(text),'rewritten_query':self.adapter.sanitize(query)},{'chunks':chunks})]
         context={'state':self.adapter.public_state(),'verified_order':self.adapter.order_record(),'tickets_created_this_session':sorted(self.adapter.tickets),'summary':self.summary,'issue':self.issue,'language':self.language,'evidence':chunks}
         messages=[{'role':'system','content':AGENT+'\nTrusted session context: '+json.dumps(context,ensure_ascii=False)}]
