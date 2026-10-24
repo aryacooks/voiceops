@@ -1,0 +1,11 @@
+openai==3.37.0
+numpy>=1.26,<3
+pandas>=2.2,<3
+rank-bm25==0.2.2
+sentence-transformers==6.2.0
+python-dotenv>=1,<2
+pydub==0.25.1
+gnani-vachana==0.8.2
+gradio==5.50.0
+PyYAML>=6,<7
+pytest>=8,<10

@@ -1,0 +1,112 @@
+{
+  "file": "hindi_return.wav",
+  "transcript": "mujhe jute lautane ke liye kitne",
+  "reply_text": "Namaste, main ZentroMart ki AI support assistant hoon [STY-1]. Jute footwear category mein aate hain; aap delivery date se 15 calendar days ke andar return kar sakte hain [RET-2].",
+  "reply_spoken_text": "Namaste, main ZentroMart ki AI support assistant hoon. Jute footwear category mein aate hain; aap delivery date se 15 calendar days ke andar return kar sakte hain.",
+  "retrieved_chunks": [
+    {
+      "chunk_id": "pol_returns_v4:RET-2:0",
+      "section_id": "RET-2",
+      "doc": "pol_returns_v4.md",
+      "doc_type": "pol",
+      "status": "current",
+      "effective_from": "2026-08-01",
+      "doc_id": "POL-RET",
+      "version": "4.0",
+      "superseded_by": "",
+      "text": "Returns policy\nReturn windows by category\n## [RET-2] Return windows by category The return window starts on the **delivery date** and is counted in calendar days. The category of every product is listed in the `return_category` column of the product catalog. | Category | Return window | Catalog code | | --- | --- | --- | | Electronics and accessories | 7 days | `electronics` | | Clothing, footwear and bags | 15 days | `fashion` | | Home, kitchen and furniture | 10 days | `home_kitchen` | | Beauty and personal care (unopened, seal intact) | 7 days | `beauty_sealed` | | Books and stationery | 10 days | `books_media` | | Grocery, fresh and perishables | Not returnable | `grocery` | | Innerwear, lingerie and swimwear | Not returnable | `innerwear` | | Gift cards and digital codes | Not returnable | `digital` |",
+      "score": 0.038242
+    },
+    {
+      "chunk_id": "pol_returns_v4:RET-3:0",
+      "section_id": "RET-3",
+      "doc": "pol_returns_v4.md",
+      "doc_type": "pol",
+      "status": "current",
+      "effective_from": "2026-08-01",
+      "doc_id": "POL-RET",
+      "version": "4.0",
+      "superseded_by": "",
+      "text": "Returns policy\nChange to electronics returns\n## [RET-3] Change to electronics returns From **1 August 2026**, the return window for electronics and accessories is 7 days. Electronics **delivered before 1 August 2026** keep the earlier 10-day window from version 3 of this policy.",
+      "score": 0.034989
+    },
+    {
+      "chunk_id": "pol_returns_v3_superseded:RETv3-2:0",
+      "section_id": "RETv3-2",
+      "doc": "pol_returns_v3_superseded.md",
+      "doc_type": "pol",
+      "status": "superseded",
+      "effective_from": "2026-03-01",
+      "doc_id": "POL-RET-v3",
+      "version": "3.0",
+      "superseded_by": "POL-RET",
+      "text": "Returns policy (version 3)\nReturn windows by category\n## [RETv3-2] Return windows by category | Category | Return window | | --- | --- | | Electronics and accessories | 10 days | | Clothing, footwear and bags | 15 days | | Home, kitchen and furniture | 10 days | | Beauty and personal care (unopened) | 7 days | | Books and stationery | 10 days | | Grocery, innerwear, gift cards | Not returnable |",
+      "score": 0.032493
+    },
+    {
+      "chunk_id": "00_about_this_knowledge_base:KB-00.3:0",
+      "section_id": "KB-00.3",
+      "doc": "00_about_this_knowledge_base.md",
+      "doc_type": "meta",
+      "status": "current",
+      "effective_from": "2026-08-01",
+      "doc_id": "KB-00",
+      "version": "1.2",
+      "superseded_by": "",
+      "text": "About this knowledge base\nBusiness days\n## [KB-00.3] Business days A business day is Monday to Saturday, excluding the warehouse holidays below. Refund and logistics timelines are counted in business days. Return windows are counted in calendar days. | Date | Holiday | | --- | --- | | 2026-08-15 | Independence Day | | 2026-10-02 | Gandhi Jayanti | | 2026-10-19 | Warehouse closure (festival) | | 2026-11-09 | Warehouse closure (festival) |",
+      "score": 0.025861
+    },
+    {
+      "chunk_id": "00_about_this_knowledge_base:KB-00.1:0",
+      "section_id": "KB-00.1",
+      "doc": "00_about_this_knowledge_base.md",
+      "doc_type": "meta",
+      "status": "current",
+      "effective_from": "2026-08-01",
+      "doc_id": "KB-00",
+      "version": "1.2",
+      "superseded_by": "",
+      "text": "About this knowledge base\nWhich document wins\n## [KB-00.1] Which document wins When two documents disagree, follow this order of precedence: 1. **Policy documents** (doc_type: policy) with status `current`. 2. **Agent guides** (doc_type: agent_guide). 3. **Help articles** (doc_type: help). 4. **FAQs** (doc_type: faq). 5. **Marketing pages** (doc_type: marketing). These describe benefits in general terms and never override a policy. Documents marked `status: superseded` are kept for reference only. They apply only to the cases their successor document says they still cover.",
+      "score": 0.010348
+    },
+    {
+      "chunk_id": "agent_conversation_style:STY-1:0",
+      "section_id": "STY-1",
+      "doc": "agent_conversation_style.md",
+      "doc_type": "agent",
+      "status": "current",
+      "effective_from": "2026-07-01",
+      "doc_id": "AGT-STY",
+      "version": "1.1",
+      "superseded_by": "",
+      "text": "Conversation style\nOpening\n## [STY-1] Opening Introduce yourself as ZentroMart's AI support assistant in your first reply.",
+      "score": 0.0
+    }
+  ],
+  "cited_section_ids": [
+    "RET-2",
+    "STY-1"
+  ],
+  "tool_calls": [
+    {
+      "name": "search_kb",
+      "arguments": {
+        "query": "mujhe jute lautane ke liye kitne",
+        "rewritten_query": "What is the return window for shoes?"
+      },
+      "result": {
+        "section_ids": [
+          "RET-2",
+          "RET-3",
+          "RETv3-2",
+          "KB-00.3",
+          "KB-00.1"
+        ]
+      }
+    }
+  ],
+  "latency_ms": 9575.6,
+  "mode": "audio",
+  "status": "ok",
+  "audio_file": "hindi_return.reply.wav"
+}

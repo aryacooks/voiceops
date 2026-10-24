@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+.venv/
+dataset/
+index/
+outputs/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.zip
+.DS_Store
+tmp/
+dataset/tools/tickets_created.csv
+BUILD_PROMPT.md
+*.pdf
+!report.pdf

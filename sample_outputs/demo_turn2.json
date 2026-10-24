@@ -1,0 +1,148 @@
+{
+  "file": "demo_turn2.wav",
+  "transcript": "the last four digits of my phone are [verification redacted]",
+  "reply_text": "I’m sorry for the confusion: the verified order record shows it was delivered on 15 October 2026, and a damage report was recorded for the TV. I’ve referred this to a human colleague because the damaged item is worth more than ₹10,000; your ticket ID is TKTcd3f229d18bc40acbd60601c25380684. [ESC-1] [ESC-2]",
+  "reply_spoken_text": "I’m sorry for the confusion: the verified order record shows it was delivered on 15 October 2026, and a damage report was recorded for the TV. I’ve referred this to a human colleague because the damaged item is worth more than 10,000 rupees; your ticket number ends in 0 6 8 4.",
+  "retrieved_chunks": [
+    {
+      "chunk_id": "agent_identity_verification:IDV-2:0",
+      "section_id": "IDV-2",
+      "doc": "agent_identity_verification.md",
+      "doc_type": "agent",
+      "status": "current",
+      "effective_from": "2026-07-01",
+      "doc_id": "AGT-IDV",
+      "version": "1.2",
+      "superseded_by": "",
+      "text": "Verifying the customer\nHow to verify\n## [IDV-2] How to verify Ask for the order ID, then ask for **one** of: the last 4 digits of the registered phone number, or the delivery pincode for that order. Compare with the `phone_last4` or `delivery_pincode` fields from order lookup.",
+      "score": 0.039467
+    },
+    {
+      "chunk_id": "pol_refunds:REF-1:0",
+      "section_id": "REF-1",
+      "doc": "pol_refunds.md",
+      "doc_type": "pol",
+      "status": "current",
+      "effective_from": "2026-06-15",
+      "doc_id": "POL-REF",
+      "version": "2.1",
+      "superseded_by": "",
+      "text": "Refunds policy\nWhen a refund is initiated\n## [REF-1] When a refund is initiated - **Cancelled before shipping:** immediately on cancellation. - **Returned item:** after the item passes quality check, within 2 business days of pickup. ZentroMart Plus members: at pickup. - **Prepaid order refused at the door or not delivered after 3 attempts:** once the parcel reaches the warehouse, usually 7 to 10 calendar days after the last delivery attempt.",
+      "score": 0.036158
+    },
+    {
+      "chunk_id": "agent_identity_verification:IDV-3:0",
+      "section_id": "IDV-3",
+      "doc": "agent_identity_verification.md",
+      "doc_type": "agent",
+      "status": "current",
+      "effective_from": "2026-07-01",
+      "doc_id": "AGT-IDV",
+      "version": "1.2",
+      "superseded_by": "",
+      "text": "Verifying the customer\nIf verification fails\n## [IDV-3] If verification fails Allow one retry. If it fails again, do not share order details. Offer general policy help and suggest the customer contact support from the registered phone number.",
+      "score": 0.035876
+    },
+    {
+      "chunk_id": "agent_identity_verification:IDV-4:0",
+      "section_id": "IDV-4",
+      "doc": "agent_identity_verification.md",
+      "doc_type": "agent",
+      "status": "current",
+      "effective_from": "2026-07-01",
+      "doc_id": "AGT-IDV",
+      "version": "1.2",
+      "superseded_by": "",
+      "text": "Verifying the customer\nNever read out\n## [IDV-4] Never read out Never read out the full phone number, email or street address, even to a verified customer.",
+      "score": 0.034609
+    },
+    {
+      "chunk_id": "00_about_this_knowledge_base:KB-00.3:0",
+      "section_id": "KB-00.3",
+      "doc": "00_about_this_knowledge_base.md",
+      "doc_type": "meta",
+      "status": "current",
+      "effective_from": "2026-08-01",
+      "doc_id": "KB-00",
+      "version": "1.2",
+      "superseded_by": "",
+      "text": "About this knowledge base\nBusiness days\n## [KB-00.3] Business days A business day is Monday to Saturday, excluding the warehouse holidays below. Refund and logistics timelines are counted in business days. Return windows are counted in calendar days. | Date | Holiday | | --- | --- | | 2026-08-15 | Independence Day | | 2026-10-02 | Gandhi Jayanti | | 2026-10-19 | Warehouse closure (festival) | | 2026-11-09 | Warehouse closure (festival) |",
+      "score": 0.018566
+    },
+    {
+      "chunk_id": "agent_escalation_handoff:ESC-1:0",
+      "section_id": "ESC-1",
+      "doc": "agent_escalation_handoff.md",
+      "doc_type": "agent",
+      "status": "current",
+      "effective_from": "2026-07-01",
+      "doc_id": "AGT-ESC",
+      "version": "2.0",
+      "superseded_by": "",
+      "text": "Escalation and human handover\nWhen to hand over to a human\n## [ESC-1] When to hand over to a human Hand over at once when any of these is true: 1. **Damaged, defective or wrong item worth more than ₹10,000.** 2. **Customer reports an order, payment or account activity they did not make.** 3. **Customer mentions legal action, a consumer court or a police complaint.** 4. **Third or later contact about the same issue within 7 days.** 5. **Refund more than 3 business days past its maximum timeline.** 6. **Customer asks for a human agent.** 7. **Product safety risk such as a swelling battery, burning smell, sparks or injury.** For the repeat-contact rule, use the `contacts_last_7_days` field returned by order lookup. It counts earlier contacts only, not the current one. Escalate when it is 2 or more.",
+      "score": 0.0
+    },
+    {
+      "chunk_id": "agent_escalation_handoff:ESC-2:0",
+      "section_id": "ESC-2",
+      "doc": "agent_escalation_handoff.md",
+      "doc_type": "agent",
+      "status": "current",
+      "effective_from": "2026-07-01",
+      "doc_id": "AGT-ESC",
+      "version": "2.0",
+      "superseded_by": "",
+      "text": "Escalation and human handover\nWhat to do first\n## [ESC-2] What to do first Create a ticket with `create_ticket` before handing over. Tell the customer a human colleague will contact them, and never promise an outcome, amount or time beyond what a policy states.",
+      "score": 0.0
+    }
+  ],
+  "cited_section_ids": [
+    "ESC-1",
+    "ESC-2"
+  ],
+  "tool_calls": [
+    {
+      "name": "search_kb",
+      "arguments": {
+        "query": "the last four digits of my phone are [verification redacted]",
+        "rewritten_query": "Order cancellation verification for order 89782837 with phone number ending [verification redacted] instead of delivery pincode"
+      },
+      "result": {
+        "section_ids": [
+          "IDV-2",
+          "REF-1",
+          "IDV-3",
+          "IDV-4",
+          "KB-00.3"
+        ]
+      }
+    },
+    {
+      "name": "lookup_order",
+      "arguments": {
+        "order_id": "89782837",
+        "phone_last4": "[redacted]",
+        "pincode": "[redacted]"
+      },
+      "result": {
+        "found": true,
+        "verified": true
+      }
+    },
+    {
+      "name": "create_ticket",
+      "arguments": {
+        "summary": "Customer says order 89782837 has not arrived and asks to cancel it. Verified using phone last four digits [verification redacted]; order record shows delivered on 15 October 2026, and a damage report for the TV (ELE-0021, ₹31,649) was recorded on 17 October 2026 with priority_resolution status. Escalating because this is a damaged item worth more than ₹10,000.",
+        "reason": "Damaged item valued above ₹10,000 requires immediate human handover under ESC-1."
+      },
+      "result": {
+        "created": true,
+        "ticket_id": "TKTcd3f229d18bc40acbd60601c25380684"
+      }
+    }
+  ],
+  "latency_ms": 20001.6,
+  "mode": "audio",
+  "status": "ok",
+  "audio_file": "demo_turn2.reply.wav"
+}

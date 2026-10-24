@@ -1,0 +1,15 @@
+# Verified dataset notes
+
+Validation: `python dataset/validate_dataset.py` passed all 9 CSVs, 21 KB documents, primary/foreign keys, order math, evidence and verification gates.
+
+The final release contains 52 questions and 96 turns in 23 conversations. IDs have gaps. No audio is supplied. Read README, DATA_DICTIONARY, ZIP_SCHEMA, CHANGELOG and KB-00 before implementation. KB metadata is flat key:value front matter (one unquoted colon in a title means strict YAML parsing fails); section headings are `## [RET-2] Title`, not the illustrative POL-RET-3 format in the plan. Types are policy/agent_guide/help/faq/marketing/meta, normalized internally. Superseded returns v3 remains applicable only to pre-August electronics deliveries as authorized by current RET-3.
+
+`lookup_order(order_id: str, verification_value: str=None)` with no proof returns verification_required and no existence/details. Proof is caller-provided four phone digits OR six delivery-pincode digits. Success returns found=True, verified=True, order fields, items, first name and Plus; failure is indistinguishable from not found. The adapter enforces two failed attempts total per order. It never loads customers/orders through a model-facing public table helper. Successful order payloads are available only inside the session, and logs expose a redacted result summary.
+
+`create_ticket(summary, order_id=None, reason=None, intent=None)` writes dataset/tools/tickets_created.csv. A summary under 20 characters fails. Only created=True and its returned ticket_id allow a confirmed handover.
+
+Data CSVs are read with dtype=str and keep_default_na=False. Order IDs, pincodes, refund references stay strings. Public catalog rows are indexed as products.csv:SKU because gold evidence includes these. Support logs are not indexed. Holidays: 15 August, 2 October, 19 October, 9 November 2026. Business days exclude Sundays; return windows are calendar days. Today is 20 October 2026.
+
+Questions columns include asr_text, expected_decision, acceptable_decisions, answerable, gold_evidence, must_include, must_not_include, reference_answer, reply_language, entities. Conversation text column is customer_message (no asr_text); group conversation_id and numeric turn. Expected tools contain argument expressions; evaluation checks tool names and specified arguments, with proof redacted in public outputs.
+
+External docs verified 23 October 2026: Gnani Quick Start, Python SDK STT/TTS, REST STT/TTS and voice catalog. REST STT takes files up to 60s; SDK transcribe(path, language_code=...). TTS synthesize returns WAV bytes and requires explicit timbre-v2.5; Kaveri is an English voice. SDK docs: https://docs.gnani.ai/python-sdk/speech-to-text and https://docs.gnani.ai/python-sdk/text-to-speech . REST docs: https://docs.gnani.ai/api/STT/speech-to-text and https://docs.gnani.ai/api/TTS/tts-inference . Voice catalog: https://docs.gnani.ai/api/TTS/available-voices . OpenAI native function calling contract: https://developers.openai.com/api/docs/guides/function-calling . No credentials were supplied at implementation time; external success remains unverified.

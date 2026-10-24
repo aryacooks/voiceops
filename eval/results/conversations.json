@@ -1,0 +1,4065 @@
+[
+  {
+    "conversation_id": "PC002",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hi, main ZentroMart ki AI support assistant hoon. Aapka order ID kya hai? [STY-1][IDV-1]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as ZentroMart’s AI support assistant and asks for the order ID.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hello, mujhe order ke baare mein help chahiye.",
+          "rewritten_query": "Order assistance and support options"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "STY-1",
+            "PAY-2",
+            "STY-3",
+            "TRK-1"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC002",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=89782837)",
+    "reply": "Is order ko access karne ke liye, registered phone number ke aakhri 4 digits bata sakte hain? [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Requests the registered phone number’s last four digits for verification before accessing the order.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Order number hai 8978 2837.",
+          "rewritten_query": "Order status for order 8978 2837"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "TRK-1",
+            "DEL-1",
+            "STY-3",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "89782837",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC002",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=89782837, verification_value=[redacted])",
+    "reply": "Aapka order 15 October 2026 ko deliver hua tha; order par TV damage ki report 17 October 2026 ki hai aur status “priority resolution” hai. Iske liye maine human colleague ko escalate kiya hai; woh aapse contact karenge—ticket ID **TKT21ac5bad581f4085a5eac84c4cbe3f0a**. [ESC-1][ESC-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "The verified order shows a damaged TV worth over ₹10,000, and the ticket was created. The reply accurately gives the dates and status and says a human colleague will contact the customer.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Last four digits [verification redacted] hain.",
+          "rewritten_query": "Order access identity verification for order 8978 2837 using registered phone number ending in [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "PAY-2",
+            "DEL-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "89782837",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "summary": "Customer seeks help with order 89782837. Verified using registered phone last four digits [verification redacted]. Order lookup shows delivered 15 October 2026; damaged Zentro Vista 43-inch 4K Smart TV (SKU ELE-0021), item value ₹31,649, damage reported 17 October 2026, status priority_resolution, no photos attached. Escalating because damaged item value exceeds ₹10,000; customer has not yet stated a specific request.",
+          "reason": "Escalation required under ESC-1 for damaged item worth more than ₹10,000."
+        },
+        "result": {
+          "created": true,
+          "ticket_id": "TKT21ac5bad581f4085a5eac84c4cbe3f0a"
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC002",
+    "turn": "4",
+    "expected_decision": "escalate",
+    "expected_tool_calls": "create_ticket()",
+    "reply": "Maaf kijiye, main replacement approve nahi kar sakti—₹10,000 se zyada ke damaged items Priority Resolution team handle karti hai. Aapka case pehle hi escalate kiya gaya hai; human colleague aapse contact karenge. [DWM-3][ESC-2]",
+    "decision_correct": 1,
+    "tool_recall": 0.0,
+    "evidence_recall": 0.6666666666666666,
+    "status": "ok",
+    "decision": "escalate",
+    "correctness": 0,
+    "judge_reason": "It omits the required ticket and claims the case was already escalated, but no ticket or handover is verified in context.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Maine Zentro Vista 43-inch 4K Smart TV damage report kiya tha. Abhi replacement approve kar do na?",
+          "rewritten_query": "Damaged-item replacement approval for Zentro Vista 43-inch 4K Smart TV, order 8978 2837; delivered Oct 15, 2026, damage reported Oct 17, 2026, status priority resolution"
+        },
+        "result": {
+          "section_ids": [
+            "DWM-4",
+            "WAR-2",
+            "WAR-3",
+            "RET-2",
+            "products.csv:ELE-0021"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Current policy damaged item reported within 48 hours: resolution replacement/refund options and escalation handling for damaged item value over ₹10,000. Need whether replacement can be approved by support."
+        },
+        "result": {
+          "section_ids": [
+            "DWM-3",
+            "DWM-4",
+            "DWM-1",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC003",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hello! I’m ZentroMart’s AI support assistant. Zaroor, apna 8-digit order ID share kijiye. [STY-1]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 0,
+    "judge_reason": "It introduces itself as an AI assistant and asks for the order ID, but the 8-digit requirement is unsupported.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hello, mujhe order ke baare mein help chahiye.",
+          "rewritten_query": "Order assistance and support options"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "STY-1",
+            "PAY-2",
+            "STY-3",
+            "TRK-1"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC003",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=18599253)",
+    "reply": "Order verify karne ke liye registered phone number ke aakhri 4 digits batayenge? [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Asks for the registered phone number’s last four digits to verify the customer before sharing order details.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Order number hai 1859 9253.",
+          "rewritten_query": "Order status inquiry for order 1859 9253"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "TRK-1",
+            "STY-3",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "18599253",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC003",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=18599253, verification_value=[redacted])",
+    "reply": "Aapka order **18599253** 12 October 2026 ko delivered dikh raha hai. Is order ke baare mein kis cheez mein help chahiye?",
+    "decision_correct": 0,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 0,
+    "judge_reason": "Verification passed and the scenario is return eligibility, but the reply only confirms delivery and asks what help is needed instead of addressing return eligibility.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Last four digits [verification redacted] hain.",
+          "rewritten_query": "Order verification for order 18599253 using registered phone ending in [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "PAY-2",
+            "DEL-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "18599253",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC003",
+    "turn": "4",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "Haan, aap **Kaafi Running Sneakers** 27 October 2026 tak return kar sakti hain—footwear ke liye return window delivery date se 15 calendar days hai. Aapka order 30 September 2026 ko place hua tha, isliye 1–15 October ke festive-sale 30-day window mein nahi aata. [RET-2] [RET-8]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Correctly confirms return eligibility through 27 October 2026 and explains the 15-day window and festive-sale exclusion.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Kya main Kaafi Running Sneakers return kar sakti hoon?",
+          "rewritten_query": "Return eligibility for Kaafi Running Sneakers in order 18599253 delivered October 12, 2026"
+        },
+        "result": {
+          "section_ids": [
+            "RET-2",
+            "RET-9",
+            "RET-8",
+            "products.csv:FSH-0034",
+            "KB-00.1"
+          ]
+        }
+      },
+      {
+        "name": "date_calc",
+        "arguments": {
+          "op": "add_calendar_days",
+          "start": "2026-10-12",
+          "end": "2026-10-12",
+          "days": 15
+        },
+        "result": {
+          "date": "2026-10-27",
+          "spoken_date": "27 October 2026",
+          "counting": "start excluded; Mon–Sat minus holidays for business days"
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC003",
+    "turn": "5",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "Aap ZentroMart Plus member hain, isliye return refund pickup ke waqt initiate hota hai; wallet mein initiate hone ke 2 ghante ke andar aa jata hai. [PLS-2] [REF-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Correctly states that a Plus return refund is initiated at pickup and reaches the wallet within 2 hours; no forbidden timeline is included.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Aur refund kitne din mein aayega?",
+          "rewritten_query": "Refund timeline for returned Kaafi Running Sneakers, order 18599253?"
+        },
+        "result": {
+          "section_ids": [
+            "RET-7",
+            "ESC-1",
+            "RET-9",
+            "products.csv:FSH-0034",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Current refunds policy refund timeline after return pickup and initiation wallet payment method, ZentroMart Plus member. Return refund arrival business days."
+        },
+        "result": {
+          "section_ids": [
+            "RET-7",
+            "REF-2",
+            "REF-1",
+            "PLS-2",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC004",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "नमस्ते, मैं ZentroMart की AI सहायता सहायक हूँ। आपके ऑर्डर की जानकारी देखने के लिए कृपया अपना 8 अंकों का ऑर्डर आईडी बताइए। [STY-1][IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as an AI assistant and asks for the order ID, as required.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "नमस्ते, मुझे अपने ऑर्डर के बारे में मदद चाहिए।",
+          "rewritten_query": "Help with an order"
+        },
+        "result": {
+          "section_ids": [
+            "PAY-2",
+            "STY-3",
+            "IDV-2",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC004",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=79363550)",
+    "reply": "कृपया इस ऑर्डर से जुड़ा डिलीवरी पिनकोड बताइए। [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Asks for the delivery pincode to verify the customer before sharing order details.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "ऑर्डर नंबर है 7936 3550।",
+          "rewritten_query": "Order status inquiry for order 79363550"
+        },
+        "result": {
+          "section_ids": [
+            "TRK-1",
+            "ESC-1",
+            "PAY-2",
+            "IDV-2",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "79363550",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC004",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=79363550, verification_value=[redacted])",
+    "reply": "आपका ऑर्डर 14 अक्टूबर 2026 को डिलीवर हुआ था। अब मैं इसमें किस चीज़ में मदद करूँ? [IDV-1]",
+    "decision_correct": 0,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 0,
+    "judge_reason": "The reply only gives the delivery date and asks what help is needed; it does not address return eligibility.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "आख़िरी चार अंक [verification redacted] हैं।",
+          "rewritten_query": "Order verification for order 79363550 using delivery PIN code ending in [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "PAY-2",
+            "RET-2",
+            "IDV-2",
+            "DEL-4",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "79363550",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC004",
+    "turn": "4",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "हाँ, आप अपनी UrbanThread Slim Fit Jeans 13 November 2026 तक वापस कर सकती हैं। आपका ऑर्डर 15 October 2026 से पहले रखा गया था, इसलिए इस पर कपड़ों के लिए 30-दिन की वापसी अवधि लागू होती है; वापसी अनुरोध ऐप के My Orders में करें। [RET-8]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 0.6666666666666666,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 0,
+    "judge_reason": "It gives the correct return deadline, but omits the required number 49.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "क्या मैं UrbanThread Slim Fit Jeans वापस कर सकती हूँ?",
+          "rewritten_query": "Return eligibility for UrbanThread Slim Fit Jeans delivered October 14, 2026?"
+        },
+        "result": {
+          "section_ids": [
+            "RET-2",
+            "RET-8",
+            "DWM-4",
+            "RET-9",
+            "products.csv:FSH-0030"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Current return policy festive sale orders placed October 1 to October 15 2026 clothing fashion 30 days from delivery, return process and deadline calculation"
+        },
+        "result": {
+          "section_ids": [
+            "RET-8",
+            "RET-3",
+            "RET-2",
+            "RET-9",
+            "KB-00.2"
+          ]
+        }
+      },
+      {
+        "name": "date_calc",
+        "arguments": {
+          "op": "add_calendar_days",
+          "start": "2026-10-14",
+          "end": "2026-10-14",
+          "days": 30
+        },
+        "result": {
+          "date": "2026-11-13",
+          "spoken_date": "13 November 2026",
+          "counting": "start excluded; Mon–Sat minus holidays for business days"
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC004",
+    "turn": "5",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "UPI रिफ़ंड शुरू होने के बाद आमतौर पर 1–3 कार्यदिवस में आता है। वापसी पिकअप के बाद सामान की गुणवत्ता जाँच पास होने पर रिफ़ंड 2 कार्यदिवस के भीतर शुरू किया जाता है। [RET-7][REF-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Correctly states the UPI refund takes 1–3 business days after initiation and that initiation follows pickup and a passed quality check, within 2 business days.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "और रिफ़ंड कितने दिन में आएगा?",
+          "rewritten_query": "Refund timeline for returned UrbanThread Slim Fit Jeans"
+        },
+        "result": {
+          "section_ids": [
+            "RET-7",
+            "RET-8",
+            "RET-5",
+            "products.csv:FSH-0030",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Current refund policy timeline after return refund initiated, UPI payment method, refund arrival business days."
+        },
+        "result": {
+          "section_ids": [
+            "REF-2",
+            "RET-7",
+            "RET-2",
+            "REF-6",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC005",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "नमस्ते, मैं ZentroMart की AI सहायता सहायक हूँ। कृपया अपना 8 अंकों का ऑर्डर आईडी बताइए। [STY-1]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 0,
+    "judge_reason": "It introduces itself as an AI assistant and asks for the order ID, but the unsupported claim that the ID must be 8 digits adds a requirement not in the context.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "नमस्ते, मुझे अपने ऑर्डर के बारे में मदद चाहिए।",
+          "rewritten_query": "Order support help request"
+        },
+        "result": {
+          "section_ids": [
+            "PAY-2",
+            "STY-1",
+            "CAN-1",
+            "DWM-3",
+            "IDV-2"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC005",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=37113676)",
+    "reply": "इस ऑर्डर की जानकारी देखने के लिए सत्यापन ज़रूरी है। कृपया ऑर्डर से जुड़े पंजीकृत फ़ोन नंबर के आख़िरी 4 अंक बताइए। [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "The reply asks for the registered phone number’s last four digits, a permitted verification detail, before sharing order information.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "ऑर्डर नंबर है 3711 3676।",
+          "rewritten_query": "Order support for order 37113676"
+        },
+        "result": {
+          "section_ids": [
+            "DWM-3",
+            "PAY-2",
+            "STY-1",
+            "TRK-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "37113676",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC005",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=37113676, verification_value=[redacted])",
+    "reply": "आपका ऑर्डर 18 जून 2026 को डिलीवर हुआ था। अब मैं इस ऑर्डर के बारे में किस चीज़ में मदद करूँ? [IDV-1]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Verification passed, and the delivery date stated is supported by the order record; asking how else to help is appropriate.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "आख़िरी चार अंक [verification redacted] हैं।",
+          "rewritten_query": "Order identity verification for order 37113676 using registered phone ending [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "IDV-3",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "37113676",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC005",
+    "turn": "4",
+    "expected_decision": "escalate",
+    "expected_tool_calls": "create_ticket()",
+    "reply": "हाँ, मैंने आपके लिए मानव सहयोगी से संपर्क हेतु अनुरोध दर्ज कर दिया है; वे आपसे संपर्क करेंगे। आपका टिकट आईडी **TKT6295c0be2d854e65a4fb0a399138f58e** है। [ESC-1] [ESC-2] [FAQ-4]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "escalate",
+    "correctness": 1,
+    "judge_reason": "It confirms a ticket was created and says a human colleague will contact the customer, matching the handover requirement.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "क्या मैं किसी इंसान से बात कर सकती हूँ?",
+          "rewritten_query": "How to speak with a human support agent about order 3711 3676?"
+        },
+        "result": {
+          "section_ids": [
+            "DWM-3",
+            "ESC-1",
+            "FAQ-4",
+            "KB-00.3",
+            "KB-00.1"
+          ]
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "summary": "Customer asks to speak with a human colleague about order 37113676. Customer said in Hindi: “क्या मैं किसी इंसान से बात कर सकती हूँ?” Order lookup was verified; checked that order status is delivered on 18 June 2026. Escalation reason: customer explicitly requested a human agent.",
+          "reason": "Customer asks to speak with a human agent."
+        },
+        "result": {
+          "created": true,
+          "ticket_id": "TKT6295c0be2d854e65a4fb0a399138f58e"
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC006",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hi, I’m ZentroMart’s AI support assistant. Please share your 8-digit order ID so I can help. [STY-1] [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 0,
+    "judge_reason": "It introduces itself as an AI assistant and asks for the order ID, but the unsupported claim that it must be 8 digits could mislead the customer.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hi, I need some help with an order.",
+          "rewritten_query": "How to get help with an order?"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "ESC-1",
+            "TRK-1",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC006",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=66492475)",
+    "reply": "Thanks. Please share either the last 4 digits of the registered phone number or the delivery pincode for this order. [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Requests either permitted verification detail before sharing order information.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The order number is 6649 2475.",
+          "rewritten_query": "Order status for order 6649 2475"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "TRK-1",
+            "DEL-1",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "66492475",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC006",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=66492475, verification_value=[redacted])",
+    "reply": "I’ve verified your order, and it was delivered on 6 October 2026. How can I help with it? [IDV-1]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "The verified order record supports the delivery date, and the reply appropriately asks how it can help.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The last four digits are [verification redacted].",
+          "rewritten_query": "Verify order 66492475 using registered phone number ending in [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "IDV-4",
+            "REF-6",
+            "TRK-1"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "66492475",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC006",
+    "turn": "4",
+    "expected_decision": "escalate",
+    "expected_tool_calls": "create_ticket()",
+    "reply": "A human colleague will contact you about your request. Your ticket ID is TKTdd3e5092c1ae4cb3941fad6c00dd45e5. [ESC-1] [ESC-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "escalate",
+    "correctness": 1,
+    "judge_reason": "It appropriately confirms a human colleague will contact the customer and provides the created ticket ID.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Actually, can I just speak to a person?",
+          "rewritten_query": "Request to speak with a human support agent for order 6649 2475"
+        },
+        "result": {
+          "section_ids": [
+            "ESC-1",
+            "FAQ-4",
+            "ESC-2",
+            "KB-00.3",
+            "KB-00.1"
+          ]
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "summary": "Customer Farhan asks to speak to a person about order 66492475. Order was verified; record shows delivered on 6 October 2026. No specific issue has been stated. Escalating because customer requests a human colleague.",
+          "reason": "Customer explicitly requested a human agent."
+        },
+        "result": {
+          "created": true,
+          "ticket_id": "TKTdd3e5092c1ae4cb3941fad6c00dd45e5"
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC007",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hello, main ZentroMart ki AI support assistant hoon. Apna order ID share karenge? [STY-1]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as ZentroMart’s AI support assistant and asks the customer for the order ID.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hello, mujhe order ke baare mein help chahiye.",
+          "rewritten_query": "ZentroMart order assistance and support options"
+        },
+        "result": {
+          "section_ids": [
+            "STY-1",
+            "DEL-4",
+            "CAN-1",
+            "MKS-1",
+            "IDV-3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC007",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=45011817)",
+    "reply": "Registered phone ke last 4 digits ya order ka delivery pincode—dono mein se ek bata sakte hain? [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Requests one of the allowed verification details: the registered phone’s last four digits or the order’s delivery pincode.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Order number hai 4501 1817.",
+          "rewritten_query": "Order assistance for order 4501 1817"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "TRK-1",
+            "CAN-2",
+            "CAN-4",
+            "STY-3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "45011817",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC007",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=45011817, verification_value=[redacted])",
+    "reply": "Order 45011817 is shipped, with delivery promised by 23 October 2026. I’ve referred your request to a human colleague; your ticket ID is TKTc48c58d286f54a18892be802c38a2516. [ESC-1] [ESC-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 0,
+    "judge_reason": "The handover policy requires telling the customer that a human colleague will contact them; the reply only says the request was referred.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Last four digits [verification redacted] hain.",
+          "rewritten_query": "Order identity verification for order 4501 1817 using registered phone ending [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "DWM-2",
+            "IDV-3",
+            "PAY-2"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "45011817",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "summary": "Customer Ira asked for help about order 45011817. Verified using phone last four digits [verification redacted]; checked order is shipped, promised delivery 23 October 2026, and contacts_last_7_days is 2. Escalating because this is the third contact about the same issue within seven days.",
+          "reason": "Third contact within 7 days; contacts_last_7_days is 2."
+        },
+        "result": {
+          "created": true,
+          "ticket_id": "TKTc48c58d286f54a18892be802c38a2516"
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC007",
+    "turn": "4",
+    "expected_decision": "escalate",
+    "expected_tool_calls": "create_ticket()",
+    "reply": "Samajh gayi—isi issue par is hafte aapka teesra contact hone ki wajah se maine ise human colleague ko bhej diya hai. Woh aapse contact karenge; ticket ID **TKT50a4ce1da3cc47b19d9f62ff1316ff20** hai. [ESC-1] [ESC-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 0.5,
+    "status": "ok",
+    "decision": "escalate",
+    "correctness": 1,
+    "judge_reason": "Escalates the third contact to a human colleague, gives the created ticket ID, and says the colleague will contact the customer.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Main is hafte teesri baar call kar rahi hoon isi baare mein.",
+          "rewritten_query": "Repeated delivery inquiry and escalation follow-up for shipped order 45011817, promised by 23 October 2026, ticket TKTc48c58d286f54a18892be802c38a2516"
+        },
+        "result": {
+          "section_ids": [
+            "TRK-1",
+            "ESC-1",
+            "STY-3",
+            "DEL-4",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "summary": "Customer says this is her third contact this week about order 45011817 and needs help regarding it. Order verification is complete; checked order record: shipped, promised delivery 23 October 2026, contacts_last_7_days=2. Escalate under repeat-contact rule.",
+          "reason": "Third contact about the same issue within 7 days; prior contact count is 2."
+        },
+        "result": {
+          "created": true,
+          "ticket_id": "TKT50a4ce1da3cc47b19d9f62ff1316ff20"
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC008",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hi, I’m ZentroMart’s AI support assistant. Please share your order ID so I can help.",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 0.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as an AI assistant and asks for the order ID.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hi, I need some help with an order.",
+          "rewritten_query": "Order assistance and support options"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "PAY-2",
+            "STY-3",
+            "IDV-2",
+            "TRK-1"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC008",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=48196636)",
+    "reply": "Please share either the last 4 digits of the registered phone number or the delivery pincode for this order. [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Requests one of the required verification details before sharing order information.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The order number is 4819 6636.",
+          "rewritten_query": "Help with order 4819 6636"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "TRK-1",
+            "TRK-2",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "48196636",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC008",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=48196636, verification_value=[redacted])",
+    "reply": "Your order was delivered on 3 October 2026. What can I help you with? [TRK-1]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "The verified order record confirms delivery on 3 October 2026, and the reply accurately states this before asking how it can help.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The last four digits are [verification redacted].",
+          "rewritten_query": "Order verification using registered phone number ending [verification redacted] for order 4819 6636"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "IDV-4",
+            "TRK-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "48196636",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC008",
+    "turn": "4",
+    "expected_decision": "escalate",
+    "expected_tool_calls": "create_ticket()",
+    "reply": "I’m sorry this is taking repeated follow-up; I’ve escalated it to a human colleague, who will contact you. Your ticket ID is TKT69c8d60e44834cec9c85ab31d4fa51e7. [ESC-1] [ESC-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 0.5,
+    "status": "ok",
+    "decision": "escalate",
+    "correctness": 1,
+    "judge_reason": "The third contact triggers escalation; a ticket was created, and the reply tells the customer a human colleague will contact them.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "This is the third time I'm calling about this in a week.",
+          "rewritten_query": "Repeat support contact escalation for order 4819 6636, delivered 3 October 2026"
+        },
+        "result": {
+          "section_ids": [
+            "ESC-1",
+            "STY-3",
+            "KB-00.2",
+            "RET-3",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "summary": "Customer says this is their third contact about the same issue within a week; intent is to get help with order 48196636. Customer previously said they need help with an order and now reports this is the third call. Checked the verified order record: delivered 3 October 2026, with 2 earlier contacts in the last 7 days. Escalating under the repeat-contact rule.",
+          "reason": "Third or later contact about the same issue within 7 days; order record shows 2 earlier contacts."
+        },
+        "result": {
+          "created": true,
+          "ticket_id": "TKT69c8d60e44834cec9c85ab31d4fa51e7"
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC009",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "नमस्ते, मैं ZentroMart की AI सहायता सहायक हूँ। आपके ऑर्डर में मदद के लिए कृपया अपना 8 अंकों का ऑर्डर ID बताइए। [STY-1] [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 0,
+    "judge_reason": "It introduces an unsupported requirement that the order ID be 8 digits.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "नमस्ते, मुझे अपने ऑर्डर के बारे में मदद चाहिए।",
+          "rewritten_query": "Order support assistance"
+        },
+        "result": {
+          "section_ids": [
+            "PAY-2",
+            "STY-1",
+            "CAN-1",
+            "DWM-3",
+            "IDV-2"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC009",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=67830826)",
+    "reply": "कृपया इस ऑर्डर से जुड़े रजिस्टर्ड फ़ोन नंबर के आख़िरी 4 अंक बताइए। [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Requests the registered phone number’s last four digits to verify the customer before sharing refund details.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "ऑर्डर नंबर है 6783 0826।",
+          "rewritten_query": "Order support for order 67830826"
+        },
+        "result": {
+          "section_ids": [
+            "DWM-3",
+            "PAY-2",
+            "DEL-1",
+            "STY-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "67830826",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC009",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=67830826, verification_value=[redacted])",
+    "reply": "आपका ऑर्डर 15 October 2026 को डिलीवर हुआ था और रिटर्न पिकअप 20 October 2026 को दर्ज है; रिफंड शुरू होने की तारीख अभी दर्ज नहीं है। आप इस रिटर्न या रिफंड के बारे में क्या जानना चाहेंगे?",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "It accurately reports the delivery and return-pickup dates and says no refund initiation date is recorded, consistent with the order record.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "आख़िरी चार अंक [verification redacted] हैं।",
+          "rewritten_query": "Order verification for order 67830826 using registered phone ending [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "ESC-1",
+            "DEL-1",
+            "STY-3",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "67830826",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC009",
+    "turn": "4",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "आपका रिटर्न 20 October 2026 को पिकअप हुआ है; रिकॉर्ड में QC पास होना या रिफंड शुरू होना अभी दर्ज नहीं है। QC पास होने के बाद रिफंड 2 कार्यदिवस के भीतर शुरू किया जाता है (22 October 2026 तक, पिकअप से गिनने पर); शुरू होने के बाद UPI रिफंड में 1–3 कार्यदिवस लगते हैं। [RET-7] [REF-2] [KB-00.3]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "It reports the pickup and pending QC, explains the refund initiation and UPI timelines, and includes the required QC concept.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "मेरा रिफ़ंड कहाँ है?",
+          "rewritten_query": "Refund status for order 6783 0826 after return pickup on 20 October 2026; refund initiation date not listed"
+        },
+        "result": {
+          "section_ids": [
+            "RET-2",
+            "RET-7",
+            "RET-8",
+            "RET-3",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Current refund policy UPI return refund after warehouse QC passed initiation timeline after refund initiated UPI arrival maximum business days; escalation refund more than 3 business days past maximum timeline"
+        },
+        "result": {
+          "section_ids": [
+            "RET-7",
+            "REF-2",
+            "REF-1",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "date_calc",
+        "arguments": {
+          "op": "add_business_days",
+          "start": "2026-10-20",
+          "end": "2026-10-20",
+          "days": 2
+        },
+        "result": {
+          "date": "2026-10-22",
+          "spoken_date": "22 October 2026",
+          "counting": "start excluded; Mon–Sat minus holidays for business days"
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC010",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hello, main ZentroMart ka AI support assistant hoon. Aapka order check karne ke liye order ID bataiye. [STY-1]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as ZentroMart’s AI support assistant and asks for the order ID.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hello, mujhe order ke baare mein help chahiye.",
+          "rewritten_query": "Order assistance and support options"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "STY-1",
+            "PAY-2",
+            "STY-3",
+            "TRK-1"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC010",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=16640894)",
+    "reply": "Order 1664 0894 verify karne ke liye, registered phone number ke aakhri 4 digits **ya** delivery pincode bataiye. [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Asks for either the registered phone’s last four digits or the delivery pincode before sharing order details.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Order number hai 1664 0894.",
+          "rewritten_query": "Order status lookup for order number 1664 0894"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "ESC-1",
+            "TRK-1",
+            "STY-3",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "16640894",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC010",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=16640894, verification_value=[redacted])",
+    "reply": "Aapka order 14 July 2026 ko deliver hua tha; ₹2,480 ka return refund 20 July 2026 ko UPI ke through initiate hua tha, aur abhi complete nahi dikh raha. Aapko refund ke baare mein help chahiye ya order ke kisi aur issue mein?",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Accurately states the delivery date and return-refund amount, method, initiation date, and incomplete status from the verified order record.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Last four digits [verification redacted] hain.",
+          "rewritten_query": "Verify order 1664 0894 with registered phone number ending in [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "PAY-2",
+            "IDV-3",
+            "RET-2"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "16640894",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC010",
+    "turn": "4",
+    "expected_decision": "escalate",
+    "expected_tool_calls": "create_ticket()",
+    "reply": "Aapka ₹2,480 UPI refund 20 July 2026 ko initiate hua tha; UPI refunds ka timeline 1–3 business days hai, aur RRN **315633825001** aapka bank trace kar sakta hai. Refund timeline se kaafi late hai, isliye maine human colleague ke liye ticket banaya hai; woh aapse contact karenge: **TKT13c29ec73a5649ffa571c5117a63122a**. [REF-2] [REF-6] [ESC-1] [ESC-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "escalate",
+    "correctness": 1,
+    "judge_reason": "Shares the RRN, says a human colleague will contact the customer, and confirms a ticket was created; it does not promise arrival tomorrow.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Mera refund kahan hai?",
+          "rewritten_query": "Order 1664 0894 ₹2,480 return refund status—UPI refund initiated July 20, 2026, still incomplete?"
+        },
+        "result": {
+          "section_ids": [
+            "REF-6",
+            "REF-2",
+            "RET-2",
+            "REF-4",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Current refund policy UPI refund 1 to 3 business days from initiation; when money has not arrived share RRN refund reference number; escalation if refund more than 3 business days past maximum timeline."
+        },
+        "result": {
+          "section_ids": [
+            "REF-6",
+            "REF-2",
+            "ESC-1",
+            "KB-00.3",
+            "KB-00.1"
+          ]
+        }
+      },
+      {
+        "name": "date_calc",
+        "arguments": {
+          "op": "add_business_days",
+          "start": "2026-07-20",
+          "end": "",
+          "days": 3
+        },
+        "result": {
+          "date": "2026-07-23",
+          "spoken_date": "23 July 2026",
+          "counting": "start excluded; Mon–Sat minus holidays for business days"
+        }
+      },
+      {
+        "name": "date_calc",
+        "arguments": {
+          "op": "add_business_days",
+          "start": "2026-07-23",
+          "end": "",
+          "days": 3
+        },
+        "result": {
+          "date": "2026-07-27",
+          "spoken_date": "27 July 2026",
+          "counting": "start excluded; Mon–Sat minus holidays for business days"
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "summary": "Customer asks where return refund is for order 16640894. Verified order shows ₹2,480 UPI refund initiated 20 July 2026, not completed; RRN 315633825001. Checked UPI timeline of 1–3 business days, due 23 July 2026, and escalation threshold more than 3 business days past maximum, 27 July 2026. Current date 20 October 2026, so threshold passed.",
+          "reason": "Refund is more than 3 business days past its maximum timeline; customer reports money has not arrived."
+        },
+        "result": {
+          "created": true,
+          "ticket_id": "TKT13c29ec73a5649ffa571c5117a63122a"
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC011",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hi, I’m ZentroMart’s AI support assistant. I can check the delivery status once I verify the order—what’s your 8-digit order ID? [IDV-1] [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 0.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as an AI assistant and asks for the order ID, as required; it does not disclose order-specific information.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hi, my order hasn't arrived yet. Where is it?",
+          "rewritten_query": "Order delivery status: Where is my delayed order?"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "CAN-3",
+            "DEL-5",
+            "TRK-1",
+            "DEL-4"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC011",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=26295015)",
+    "reply": "Please share either the last 4 digits of the phone number registered to the order or the delivery pincode. [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Requests one of the required verification details before sharing order information.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The order number is 2629 5015.",
+          "rewritten_query": "Delivery status for order 2629 5015"
+        },
+        "result": {
+          "section_ids": [
+            "TRK-1",
+            "DEL-1",
+            "IDV-2",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "26295015",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC011",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=26295015, verification_value=[redacted])",
+    "reply": "Your order is shipped and with the courier; it’s currently on the way. The promised delivery date is 22 October 2026, so it isn’t late yet. [TRK-1] [DEL-1]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Accurately states the verified shipped status and promised delivery date, and correctly notes that the order is not late yet.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The last four digits are [verification redacted].",
+          "rewritten_query": "Delivery status lookup for order 26295015, verify registered phone ending [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "TRK-1",
+            "STY-3",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "26295015",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Current policy standard delivery promised date delivery late what customer told where is order shipped TRK-1 status meaning standard delivery ETA"
+        },
+        "result": {
+          "section_ids": [
+            "DEL-1",
+            "DEL-4",
+            "TRK-1",
+            "CAN-2",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "date_calc",
+        "arguments": {
+          "op": "today",
+          "start": "2026-10-20",
+          "end": "2026-10-20",
+          "days": 0
+        },
+        "result": {
+          "date": "2026-10-20"
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC011",
+    "turn": "4",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "If you’re not home, the courier can make up to 3 delivery attempts; after a missed attempt, you’ll receive an SMS to reschedule. If all 3 attempts fail, the parcel is returned to the warehouse. [DEL-3]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Correctly explains the three delivery attempts, SMS rescheduling after a missed attempt, and return to warehouse if all attempts fail.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "And what if I'm not at home?",
+          "rewritten_query": "Delivery if unavailable at home for shipped order 2629 5015 due 22 October 2026"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-2",
+            "RET-2",
+            "DEL-1",
+            "TRK-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "delivery customer absent not at home courier delivery attempt reschedule redelivery policy DEL-3"
+        },
+        "result": {
+          "section_ids": [
+            "DEL-3",
+            "REF-1",
+            "TRK-1",
+            "RET-2",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC012",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hi, I’m ZentroMart’s AI support assistant. Please share your order ID so I can check where it is [IDV-1][IDV-2].",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 0.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as an AI assistant and asks for the order ID before sharing order-specific information.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hi, my order hasn't arrived yet. Where is it?",
+          "rewritten_query": "Where is my order that hasn’t arrived yet?"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "CAN-3",
+            "DEL-5",
+            "DEL-4",
+            "TRK-2"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC012",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=75447568)",
+    "reply": "Thanks. To verify the order, what are the last 4 digits of the registered phone number, or the delivery pincode? [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Requests one of the required verification details—the last 4 digits or delivery pincode—before sharing order information.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The order number is 7544 7568.",
+          "rewritten_query": "Order tracking status for order 7544 7568"
+        },
+        "result": {
+          "section_ids": [
+            "TRK-1",
+            "IDV-2",
+            "TRK-2",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "75447568",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC012",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=75447568, verification_value=[redacted])",
+    "reply": "Your order was shipped on 14 October 2026 and is with the courier, on its way [TRK-1]. The promised delivery date is 24 October 2026 [DEL-1].",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Accurately states the shipped status and promised delivery date, supported by the order record and cited policy.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The last four digits are [verification redacted].",
+          "rewritten_query": "Order tracking status for order 7544 7568, verified with phone ending [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "TRK-1",
+            "IDV-4",
+            "IDV-3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "75447568",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "current policy standard delivery promised date and what to tell customer order shipped not delivered; delivery timeline or delays; standard delivery commitment"
+        },
+        "result": {
+          "section_ids": [
+            "DEL-1",
+            "DEL-4",
+            "TRK-1",
+            "TRK-2",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "date_calc",
+        "arguments": {
+          "op": "today",
+          "start": "2026-10-20",
+          "end": "2026-10-20",
+          "days": 0
+        },
+        "result": {
+          "date": "2026-10-20"
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC012",
+    "turn": "4",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "If you’re not home, the courier makes up to 3 delivery attempts; after a failed attempt, you’ll receive an SMS to reschedule. If the third attempt also fails, the parcel is returned to the warehouse [DEL-3].",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Accurately explains the up-to-3 delivery attempts, rescheduling SMS, and return after a failed third attempt, supported by DEL-3.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "And what if I'm not at home?",
+          "rewritten_query": "What happens if I’m not home when order 7544 7568 is delivered?"
+        },
+        "result": {
+          "section_ids": [
+            "TRK-2",
+            "TRK-1",
+            "CAN-2",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "What happens if customer is not home when delivery is attempted? missed delivery, delivery attempt, reschedule, courier instructions, standard order"
+        },
+        "result": {
+          "section_ids": [
+            "DEL-3",
+            "RVP-2",
+            "REF-1",
+            "TRK-1",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC013",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hello, main ZentroMart ki AI support assistant hoon. Order ke baare mein madad ke liye apna order ID share karenge? [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 0.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as an AI support assistant and asks for the order ID, as required.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hello, mujhe order ke baare mein help chahiye.",
+          "rewritten_query": "How can I get help with my order?"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "IDV-2",
+            "STY-3",
+            "TRK-1",
+            "TRK-2"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC013",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=86152121)",
+    "reply": "Is order ko dekhne se pehle verification zaroori hai. Registered phone number ke aakhri 4 digits bata sakte hain, ya is order ka delivery pincode? [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Requests one of the required verification details before sharing order information.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Order number hai 8615 2121.",
+          "rewritten_query": "Order status and assistance for order 8615 2121"
+        },
+        "result": {
+          "section_ids": [
+            "TRK-1",
+            "ESC-1",
+            "IDV-2",
+            "PAY-2",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "86152121",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC013",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=86152121, verification_value=[redacted])",
+    "reply": "Aapka order 8615 2121, 15 October 2026 ko delivered dikh raha hai. Is order mein kis cheez ki madad chahiye?",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Verification passed, and the reply gives the verified order’s delivery status and asks what help is needed.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Last four digits [verification redacted] hain.",
+          "rewritten_query": "Order verification for order 8615 2121 using registered phone number ending [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "IDV-3",
+            "DEL-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "86152121",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC013",
+    "turn": "4",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "Nahi, ek order par sirf ek coupon laga sakte hain; coupons combine nahi kiye ja sakte. [CPN-1]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Correctly states that only one coupon can be applied per order and that coupons cannot be combined, supported by CPN-1.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Theek hai. Ek aur sawaal: agle order pe do coupon laga sakta hoon?",
+          "rewritten_query": "Can I use two coupons on my next order? Coupon stacking policy"
+        },
+        "result": {
+          "section_ids": [
+            "CPN-1",
+            "CPN-2",
+            "REF-4",
+            "CAN-4",
+            "CAN-1"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Current policy can multiple coupons be applied to one order combine coupons"
+        },
+        "result": {
+          "section_ids": [
+            "CPN-1",
+            "CPN-2",
+            "CAN-4",
+            "REF-4",
+            "CPN-3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC013",
+    "turn": "5",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "Aapka order 9 October 2026 ko ship hua tha.",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "The reply gives the verified shipping date, 9 October 2026.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Achha. Aur mera order kab ship hua tha?",
+          "rewritten_query": "Shipping date for order 8615 2121"
+        },
+        "result": {
+          "section_ids": [
+            "DEL-1",
+            "DEL-6",
+            "TRK-1",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC014",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hi, I’m ZentroMart’s AI support assistant. Please share your order ID so I can help with your order. [STY-1] [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as an AI support assistant and asks for the order ID.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hi, I need some help with an order.",
+          "rewritten_query": "Help with an order support topic"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "CAN-1",
+            "TRK-1",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC014",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=10048947)",
+    "reply": "Thanks. Please provide either the last 4 digits of the phone number registered to the order or the order’s delivery pincode. [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Requests one of the specified verification details: the phone’s last 4 digits or the delivery pincode.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The order number is 1004 8947.",
+          "rewritten_query": "Order status for order 1004 8947"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "TRK-1",
+            "STY-3",
+            "IDV-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "10048947",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC014",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=10048947, verification_value=[redacted])",
+    "reply": "Your order is marked delivered on 14 October 2026. How can I help you with it?",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "The reply accurately states the verified delivery date and invites the customer to explain what they need.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The last four digits are [verification redacted].",
+          "rewritten_query": "Order verification for order 1004 8947 using registered phone ending [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "IDV-3",
+            "IDV-4",
+            "TRK-1"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "10048947",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC014",
+    "turn": "4",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "No, only one coupon can be applied per order, and coupons can’t be combined. [CPN-1]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Correctly states that only one coupon can be used per order, supported by the cited policy.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Okay. Different question: can I use two coupons on my next order?",
+          "rewritten_query": "Can I use two coupons on one ZentroMart order? (coupon stacking policy)"
+        },
+        "result": {
+          "section_ids": [
+            "CPN-1",
+            "CPN-2",
+            "CAN-4",
+            "PAY-4",
+            "KB-00.1"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Current coupon policy whether multiple coupons can be applied together to one order"
+        },
+        "result": {
+          "section_ids": [
+            "CPN-1",
+            "CPN-2",
+            "CAN-4",
+            "REF-4",
+            "CPN-3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC014",
+    "turn": "5",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "Your order was shipped on 8 October 2026.",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Correctly states the verified shipment date: 8 October 2026.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Got it. And going back to my order, when was it shipped?",
+          "rewritten_query": "Order shipment date for the order delivered on 14 October 2026?"
+        },
+        "result": {
+          "section_ids": [
+            "DEL-1",
+            "TRK-2",
+            "TRK-1",
+            "KB-00.2",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "policy or help section for order tracking shipped status and shipment date, what can tell customer about when an order shipped; order-specific timeline date citation evidence"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-1",
+            "CAN-1",
+            "TRK-1",
+            "DEL-1",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC015",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hello, main ZentroMart ki AI support assistant hoon. Aap apna order ID share karenge? [STY-1]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as ZentroMart’s AI support assistant and asks for the order ID.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hello, mujhe order ke baare mein help chahiye.",
+          "rewritten_query": "ZentroMart order assistance and support options"
+        },
+        "result": {
+          "section_ids": [
+            "STY-1",
+            "DEL-4",
+            "CAN-1",
+            "MKS-1",
+            "IDV-3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC015",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=84889113)",
+    "reply": "Order 84889113 ki jaankari dekhne ke liye, registered phone number ke aakhri 4 digits ya delivery pincode mein se ek batayein. [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "It asks for one permitted verification detail—the last four digits of the registered phone number or the delivery pincode—before sharing order information.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Order number hai 8488 9113.",
+          "rewritten_query": "Order status for order 8488 9113"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "TRK-1",
+            "TRK-2",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "84889113",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC015",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=84889113, verification_value=[redacted])",
+    "reply": "Meera, order 84889113 29 June 2026 ko deliver hua tha; earbuds ka quality return refund ₹2,199 UPI se 11 July 2026 ko complete hua. Aapko is order ke baare mein kis cheez mein help chahiye?",
+    "decision_correct": 0,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 0,
+    "judge_reason": "It confirms order and refund details but does not address the compensation demand for the late delivery.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Last four digits [verification redacted] hain.",
+          "rewritten_query": "Order 84889113 verification using registered phone number ending in [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "REF-6",
+            "RET-2",
+            "PAY-2"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "84889113",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC015",
+    "turn": "4",
+    "expected_decision": "refuse",
+    "expected_tool_calls": "",
+    "reply": "Maaf kijiye, aapka order Standard delivery tha aur ismein late delivery ke liye voucher ya doosri compensation nahi di jaati. [DEL-4]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 0.5,
+    "status": "ok",
+    "decision": "refuse",
+    "correctness": 1,
+    "judge_reason": "Apologizes and correctly explains that late Standard delivery is not eligible for a voucher or other compensation.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Order late aaya, mujhe 300 rupaye ka voucher chahiye.",
+          "rewritten_query": "Late delivery compensation: request for ₹300 voucher for order 84889113"
+        },
+        "result": {
+          "section_ids": [
+            "DEL-4",
+            "PAY-2",
+            "REF-5",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Current policy late delivery compensation voucher Standard delivery no compensation; Express late fee wallet credit, eligibility and rule."
+        },
+        "result": {
+          "section_ids": [
+            "DEL-4",
+            "PAY-1",
+            "DWM-2",
+            "DEL-1",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC016",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hello, main ZentroMart ki AI support assistant hoon. Apna order ID share karenge, please? [STY-1] [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as ZentroMart’s AI support assistant and asks for the order ID, as required.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hello, mujhe order ke baare mein help chahiye.",
+          "rewritten_query": "Order assistance and support options"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "STY-1",
+            "PAY-2",
+            "STY-3",
+            "TRK-1"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC016",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=31171629)",
+    "reply": "Is order ko verify karne ke liye, registered phone number ke aakhri 4 digits **ya** delivery pincode share karein, please. [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Asks the customer to verify the order using the registered phone number’s last four digits or the delivery pincode, as required.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Order number hai 3117 1629.",
+          "rewritten_query": "Order status for order 3117 1629"
+        },
+        "result": {
+          "section_ids": [
+            "TRK-1",
+            "ESC-1",
+            "DEL-1",
+            "TRK-2",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "31171629",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC016",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=31171629, verification_value=[redacted])",
+    "reply": "Aapka order 3117 1629 **29 September 2026** ko deliver ho gaya tha. Is order ke baare mein kis cheez mein madad chahiye? [IDV-1]",
+    "decision_correct": 0,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 0,
+    "judge_reason": "The reply confirms delivery but does not address the compensation demand, despite verification passing.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Last four digits [verification redacted] hain.",
+          "rewritten_query": "Verify order 3117 1629 using registered phone number ending in [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "IDV-3",
+            "REF-6",
+            "PAY-2"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "31171629",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC016",
+    "turn": "4",
+    "expected_decision": "refuse",
+    "expected_tool_calls": "",
+    "reply": "Maaf kijiye, aapka Standard order promised date **28 September 2026** ke ek din baad, **29 September 2026** ko deliver hua. Late Standard delivery ke liye compensation nahi diya jata, isliye main ₹300 voucher offer nahi kar sakti. [DEL-4]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 0.5,
+    "status": "ok",
+    "decision": "refuse",
+    "correctness": 1,
+    "judge_reason": "Apologizes, accurately refuses the voucher under the cited Standard-delivery policy, and makes no forbidden claims.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Order late aaya, mujhe 300 rupaye ka voucher chahiye.",
+          "rewritten_query": "₹300 voucher compensation for late delivery of order 3117 1629 delivered September 29, 2026"
+        },
+        "result": {
+          "section_ids": [
+            "DEL-4",
+            "PAY-2",
+            "REF-5",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Current policy late delivery compensation voucher standard delivery express late credit promised date actual delivery; no compensation for late Standard deliveries DEL-4"
+        },
+        "result": {
+          "section_ids": [
+            "DEL-4",
+            "DEL-1",
+            "DEL-3",
+            "DEL-6",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC017",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hello, main ZentroMart ki AI support assistant hoon [STY-1]. Apna order ID share karenge? [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as ZentroMart’s AI support assistant and asks for the order ID, as required.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hello, mujhe order ke baare mein help chahiye.",
+          "rewritten_query": "Order support and assistance"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "STY-1",
+            "STY-3",
+            "IDV-3",
+            "PAY-2"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC017",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=35061733)",
+    "reply": "Order verify karne ke liye, registered phone number ke aakhri 4 digits ya delivery pincode batayenge? [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Asks for either the registered phone’s last four digits or the delivery pincode to verify the order.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Order number hai 3506 1733.",
+          "rewritten_query": "Order status inquiry for order 3506 1733"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "TRK-1",
+            "ESC-1",
+            "TRK-2",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "35061733",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC017",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=35061733, verification_value=[redacted])",
+    "reply": "Aapka order abhi placed hai (20 October 2026), aur delivery 27 October 2026 tak promised hai. Is order mein kis cheez ki madad chahiye?",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 0,
+    "judge_reason": "Verification passed and the order is unshipped, so the assistant should have handled the cancellation rather than asking what help is needed.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Last four digits [verification redacted] hain.",
+          "rewritten_query": "Verify order 3506 1733 using the registered phone number ending in [verification redacted]."
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "RET-2",
+            "IDV-3",
+            "REF-6"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "35061733",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC017",
+    "turn": "4",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "Yeh order abhi shipped nahi hua, isliye aap ise free mein My Orders section se cancel kar sakti hain; main aapki taraf se cancel nahi kar sakti. UPI refund cancellation ke turant baad initiate hoga [CAN-1][REF-1].",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 0,
+    "judge_reason": "It says cancellation is free via My Orders but omits that this must be done in the app; it also claims the refund will be to UPI without evidence supporting the refund method.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Please ise cancel kar do.",
+          "rewritten_query": "Cancel order 3506 1733 (placed on 20 October 2026, delivery promised by 27 October 2026)"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "RET-2",
+            "CAN-2",
+            "REF-5",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Current cancellation policy order placed not shipped cancellation from My Orders app, refund initiation prepaid UPI; assistant cannot cancel. Section CAN-1."
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "CAN-2",
+            "CAN-4",
+            "REF-1",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC018",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hello! I’m ZentroMart’s AI support assistant, and I’d be happy to help with your order. Please share your order ID. [STY-1] [STY-5]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as ZentroMart’s AI support assistant and asks for the order ID.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hello, mujhe order ke baare mein help chahiye.",
+          "rewritten_query": "ZentroMart order help and support inquiry"
+        },
+        "result": {
+          "section_ids": [
+            "STY-1",
+            "DEL-4",
+            "MKS-1",
+            "IDV-3",
+            "CAN-1"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC018",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=26403404)",
+    "reply": "Order verify karne ke liye, registered phone number ke last 4 digits **ya** delivery pincode share karenge? [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Asks for one of the required verification details—the phone’s last four digits or delivery pincode—before sharing order information.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Order number hai 2640 3404.",
+          "rewritten_query": "Order status and tracking for order 2640 3404"
+        },
+        "result": {
+          "section_ids": [
+            "TRK-1",
+            "PAY-2",
+            "TRK-2",
+            "STY-3",
+            "IDV-2"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "26403404",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC018",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=26403404, verification_value=[redacted])",
+    "reply": "Aapka order 20 October 2026 ko packed hua hai, aur promised delivery date 27 October 2026 hai. Order ke baare mein kis cheez mein help chahiye? [STY-5]",
+    "decision_correct": 0,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 0,
+    "judge_reason": "Verification passed and the order is packed but unshipped; the reply asks a generic question instead of addressing the cancellation scenario.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Last four digits [verification redacted] hain.",
+          "rewritten_query": "Verify order 2640 3404 using registered phone number ending in [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "PAY-2",
+            "RET-2",
+            "IDV-3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "26403404",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC018",
+    "turn": "4",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "Aapka order abhi ship nahi hua hai, isliye aap ise app ke **My Orders** section se free mein cancel kar sakte hain; refund turant initiate hoga. Main aapki taraf se cancellation nahi kar sakta. [CAN-1]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "It directs the customer to cancel for free in My Orders in the app, and does not claim to have cancelled the order.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Please ise cancel kar do.",
+          "rewritten_query": "Order cancellation request for order 2640 3404, packed on October 20, 2026, with delivery promised October 27, 2026."
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "CAN-4",
+            "CAN-2",
+            "KB-00.2",
+            "REF-5"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC019",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hello! I’m ZentroMart’s AI support assistant, aur main aapki madad karunga. Apna order ID share karenge? [STY-1]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as ZentroMart’s AI support assistant and asks for the order ID.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hello, mujhe order ke baare mein help chahiye.",
+          "rewritten_query": "Order support and assistance."
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "STY-1",
+            "STY-3",
+            "PAY-2",
+            "IDV-3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC019",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=15911102)",
+    "reply": "Is order ko verify karne ke liye, registered phone number ke aakhri 4 digits ya delivery pincode batayein—dono mein se ek. [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Asks for either the registered phone number’s last four digits or the delivery pincode to verify the customer before sharing order details.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Order number hai 1591 1102.",
+          "rewritten_query": "Order status for order 1591 1102"
+        },
+        "result": {
+          "section_ids": [
+            "TRK-1",
+            "ESC-1",
+            "IDV-2",
+            "STY-3",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "15911102",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC019",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=15911102, verification_value=[redacted])",
+    "reply": "Aapka order 20 October 2026 ko ship ho gaya hai, aur promised delivery date 29 October 2026 hai. Aapko is order ke baare mein kis cheez mein madad chahiye? [IDV-1]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "The order is verified, and the shipment and promised delivery dates in the reply match the record. Asking what help is needed is reasonable given the customer only provided a pincode.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Pincode [verification redacted] hai.",
+          "rewritten_query": "Order verification for order 1591 1102 using delivery pincode [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "PAY-2",
+            "DEL-5",
+            "DEL-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "15911102",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC019",
+    "turn": "4",
+    "expected_decision": "refuse",
+    "expected_tool_calls": "",
+    "reply": "Aapka order ship ho chuka hai, isliye ab cancel nahi ho sakta. Aap parcel delivery ke waqt lene se mana kar sakte hain; kyunki payment prepaid hai, parcel warehouse lautne ke baad refund policy ke mutabik refund hoga. [CAN-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 0.5,
+    "status": "ok",
+    "decision": "refuse",
+    "correctness": 0,
+    "judge_reason": "The reply correctly declines cancellation and explains refusing delivery, but it omits the required 7.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Mujhe ise cancel karna hai.",
+          "rewritten_query": "Can I cancel shipped order 1591 1102?"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "CAN-2",
+            "CAN-4",
+            "PLS-3",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC020",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hi, I’m ZentroMart’s AI support assistant, and I’d be happy to help. What’s your 8-digit order ID? [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 0.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 0,
+    "judge_reason": "It introduces itself as an AI assistant and asks for the order ID, but adds an unsupported requirement that the ID be 8 digits.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hi, I need some help with an order.",
+          "rewritten_query": "Order support for a general order issue"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-1",
+            "IDV-2",
+            "CAN-1",
+            "ESC-3",
+            "TRK-1"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC020",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=43165903)",
+    "reply": "Thanks. Please share either the last 4 digits of the registered phone number or the delivery pincode for this order. [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "It asks for either the registered phone’s last four digits or the delivery pincode, as required for verification.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The order number is 4316 5903.",
+          "rewritten_query": "Order status lookup for order 43165903"
+        },
+        "result": {
+          "section_ids": [
+            "TRK-1",
+            "IDV-2",
+            "ESC-1",
+            "TRK-2",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "43165903",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC020",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=43165903, verification_value=[redacted])",
+    "reply": "Your order is shipped as of 14 October 2026, with delivery promised by 21 October 2026. How can I help with it? [IDV-1]",
+    "decision_correct": 0,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 0,
+    "judge_reason": "It confirms the order is shipped but does not address the shipped-order cancellation scenario.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "My pincode is [verification redacted].",
+          "rewritten_query": "Order verification using delivery pincode [verification redacted] for order 43165903"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "PAY-2",
+            "IDV-1",
+            "DEL-5",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "43165903",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC020",
+    "turn": "4",
+    "expected_decision": "refuse",
+    "expected_tool_calls": "",
+    "reply": "I’m sorry, but this order has already shipped and can’t be cancelled. Since it was paid by card, you can refuse the parcel at the door; the refund follows the applicable policy once it returns to the warehouse. [CAN-2]",
+    "decision_correct": 0,
+    "tool_recall": null,
+    "evidence_recall": 0.5,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 0,
+    "judge_reason": "It correctly refuses cancellation and gives the supported shipped-order option, but it omits the required “7”.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "I want to cancel it.",
+          "rewritten_query": "Cancellation request for shipped order 4316 5903 (shipped 14 October 2026, delivery promised by 21 October 2026)"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "CAN-2",
+            "TRK-1",
+            "CAN-3",
+            "CAN-4"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC021",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "नमस्ते, मैं ZentroMart की AI सहायता सहायक हूँ। कृपया अपना ऑर्डर ID बताइए, ताकि मैं मदद कर सकूँ। [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 0.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as an AI assistant and asks for the order ID as required.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "नमस्ते, मुझे अपने ऑर्डर के बारे में मदद चाहिए।",
+          "rewritten_query": "Order assistance request"
+        },
+        "result": {
+          "section_ids": [
+            "PAY-2",
+            "IDV-2",
+            "DEL-6",
+            "CAN-1",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC021",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=77461439)",
+    "reply": "कृपया इस ऑर्डर का डिलीवरी पिनकोड बताइए, ताकि मैं इसे सत्यापित कर सकूँ। [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "It asks for the delivery pincode to verify the customer before sharing order details.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "ऑर्डर नंबर है 7746 1439।",
+          "rewritten_query": "Order assistance for order 7746 1439"
+        },
+        "result": {
+          "section_ids": [
+            "PAY-2",
+            "DEL-4",
+            "TRK-1",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "77461439",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC021",
+    "turn": "3",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=77461439, verification_value=[redacted])",
+    "reply": "दिए गए आख़िरी चार अंक मेल नहीं खाए। कृपया एक बार फिर कोशिश करें—या तो पंजीकृत फ़ोन के आख़िरी चार अंक, या इस ऑर्डर का डिलीवरी पिनकोड बताइए। [IDV-3]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "It says the digits did not match and requests another attempt, consistent with the allowed retry; it does not include 600042.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "आख़िरी चार अंक [verification redacted] हैं।",
+          "rewritten_query": "Order 7746 1439 verification: delivery PIN code ending in [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "RET-2",
+            "PAY-2",
+            "IDV-2",
+            "DWM-2",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "77461439",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verified": false,
+          "verification_required": true,
+          "message": "Verification failed or order not found."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC021",
+    "turn": "4",
+    "expected_decision": "refuse",
+    "expected_tool_calls": "lookup_order(order_id=77461439, verification_value=[redacted])",
+    "reply": "दिए गए आख़िरी चार अंक भी मेल नहीं खाए, इसलिए मैं इस ऑर्डर की जानकारी साझा नहीं कर सकता। कृपया सहायता के लिए पंजीकृत फ़ोन नंबर से संपर्क करें; मैं सामान्य नीतियों से जुड़े सवालों में मदद कर सकता हूँ। [IDV-3]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "refuse",
+    "correctness": 1,
+    "judge_reason": "The reply withholds order details after the second verification failure, directs the customer to contact support from the registered phone, and offers general policy help.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "आख़िरी चार अंक [verification redacted] हैं।",
+          "rewritten_query": "Identity verification for order 7746 1439 using registered phone’s last four digits [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "IDV-3",
+            "DWM-2",
+            "PAY-2"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "77461439",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verified": false,
+          "verification_required": true,
+          "message": "Verification failed or order not found."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC022",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "नमस्ते, मैं ZentroMart की AI सहायता सहायक हूँ। आपके ऑर्डर में मदद के लिए कृपया अपना ऑर्डर ID बताइए। [STY-1] [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as an AI assistant and asks for the order ID.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "नमस्ते, मुझे अपने ऑर्डर के बारे में मदद चाहिए।",
+          "rewritten_query": "Help with an order"
+        },
+        "result": {
+          "section_ids": [
+            "PAY-2",
+            "STY-3",
+            "IDV-2",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC022",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=56646891)",
+    "reply": "कृपया इस ऑर्डर का डिलीवरी पिनकोड बताइए। [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Asks for the delivery pincode to verify the customer before sharing order details.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "ऑर्डर नंबर है 5664 6891।",
+          "rewritten_query": "Order status inquiry for order 5664 6891"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "PAY-2",
+            "TRK-1",
+            "STY-3",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "56646891",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC022",
+    "turn": "3",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=56646891, verification_value=[redacted])",
+    "reply": "दिए गए आख़िरी चार अंक इस ऑर्डर से मेल नहीं खाते। कृपया दोबारा कोशिश करें—क्या आप पंजीकृत फ़ोन के आख़िरी चार अंक या डिलीवरी पिनकोड बता सकते हैं? [IDV-3]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "It says the submitted digits do not match and asks for another attempt, consistent with the one-retry rule. It includes the required wording and avoids the forbidden number.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "आख़िरी चार अंक [verification redacted] हैं।",
+          "rewritten_query": "Order 5664 6891 delivery PIN verification using last four digits [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "PAY-2",
+            "STY-3",
+            "DEL-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "56646891",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verified": false,
+          "verification_required": true,
+          "message": "Verification failed or order not found."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC022",
+    "turn": "4",
+    "expected_decision": "refuse",
+    "expected_tool_calls": "lookup_order(order_id=56646891, verification_value=[redacted])",
+    "reply": "माफ़ कीजिए, दिए गए आख़िरी चार अंक भी मेल नहीं खाते, इसलिए मैं इस ऑर्डर की जानकारी साझा नहीं कर सकता। कृपया पंजीकृत फ़ोन नंबर से सहायता टीम से संपर्क करें; मैं सामान्य नीतियों से जुड़ी मदद कर सकता हूँ। [IDV-3]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "refuse",
+    "correctness": 1,
+    "judge_reason": "It refuses to share order details after the second verification failure and directs the customer to contact support from the registered phone number.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "आख़िरी चार अंक [verification redacted] हैं।",
+          "rewritten_query": "Order verification for order 5664 6891 using registered phone last four digits [verification redacted] after failed verification"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "PAY-3",
+            "DEL-3",
+            "STY-3",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "56646891",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verified": false,
+          "verification_required": true,
+          "message": "Verification failed or order not found."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC023",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hi, I’m ZentroMart’s AI support assistant, and I’d be happy to help. What’s your order ID? [STY-1][STY-5]",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as ZentroMart’s AI support assistant and asks for the order ID.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hi, I need some help with an order.",
+          "rewritten_query": "General help with a ZentroMart order"
+        },
+        "result": {
+          "section_ids": [
+            "TRK-1",
+            "MKS-1",
+            "IDV-2",
+            "STY-3",
+            "STY-1"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC023",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=22354022)",
+    "reply": "Thanks. Please share either the last 4 digits of the phone number registered to the order or the delivery pincode. [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Requests one of the approved verification details: the registered phone’s last four digits or the delivery pincode.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The order number is 2235 4022.",
+          "rewritten_query": "General order support for order #2235 4022"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "IDV-2",
+            "TRK-1",
+            "ESC-1",
+            "KB-00.3"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "22354022",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC023",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=22354022, verification_value=[redacted])",
+    "reply": "Your order was delivered on 17 September 2026, and a ₹79 express late-delivery credit was recorded on 18 September 2026 [TRK-1]. How can I help with it?",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Accurately reports the verified delivery date and the ₹79 express late-delivery credit recorded on 18 September 2026.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The last four digits are [verification redacted].",
+          "rewritten_query": "Verify order 2235 4022 using the registered phone number ending in [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "IDV-4",
+            "TRK-1",
+            "RET-2"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "22354022",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC023",
+    "turn": "4",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "Yes—the ₹79 express fee is credited automatically to your ZentroMart Wallet when an Express order arrives after its promised date [DEL-4]. Your order record shows the ₹79 credit was recorded on 18 September 2026.",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Correctly states the ₹79 express fee was credited to the wallet and gives the recorded credit date.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "My express delivery was late. Do I get the fee back?",
+          "rewritten_query": "Late express delivery fee refund for order 2235 4022 (₹79 credit recorded 18 September 2026)"
+        },
+        "result": {
+          "section_ids": [
+            "DEL-4",
+            "REF-5",
+            "RET-6",
+            "DEL-2",
+            "DWM-2"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC024",
+    "turn": "1",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "",
+    "reply": "Hi, I’m ZentroMart’s AI support assistant. Please share your order ID so I can help [IDV-2].",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 0.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Introduces itself as an AI assistant and asks for the order ID, as required.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "Hi, I need some help with an order.",
+          "rewritten_query": "Order support assistance"
+        },
+        "result": {
+          "section_ids": [
+            "CAN-1",
+            "IDV-2",
+            "STY-3",
+            "TRK-1",
+            "PAY-2"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC024",
+    "turn": "2",
+    "expected_decision": "clarify",
+    "expected_tool_calls": "lookup_order(order_id=58634590)",
+    "reply": "Thanks. What are the last 4 digits of the phone number registered to the order? [IDV-2]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "clarify",
+    "correctness": 1,
+    "judge_reason": "Requests the last 4 digits of the phone number registered to the order for verification, as required.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The order number is 5863 4590.",
+          "rewritten_query": "Order support for order 5863 4590"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "CAN-1",
+            "TRK-1",
+            "CAN-2",
+            "DEL-4"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "58634590",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "verification_required": true,
+          "message": "Ask for the registered phone last 4 digits OR delivery pincode."
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC024",
+    "turn": "3",
+    "expected_decision": "answer",
+    "expected_tool_calls": "lookup_order(order_id=58634590, verification_value=[redacted])",
+    "reply": "Your order 58634590 was delivered on 28 September 2026, and a ₹79 express late-delivery credit was recorded on 29 September 2026. How can I help with it? [IDV-1]",
+    "decision_correct": 1,
+    "tool_recall": 1.0,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "The verified order record supports the delivery date and the ₹79 express late-delivery credit date stated in the reply.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "The last four digits are [verification redacted].",
+          "rewritten_query": "Order 5863 4590 identity verification with registered phone number ending in [verification redacted]"
+        },
+        "result": {
+          "section_ids": [
+            "IDV-2",
+            "STY-3",
+            "IDV-4",
+            "IDV-3",
+            "STY-4"
+          ]
+        }
+      },
+      {
+        "name": "lookup_order",
+        "arguments": {
+          "order_id": "58634590",
+          "phone_last4": "[redacted]",
+          "pincode": "[redacted]"
+        },
+        "result": {
+          "found": true,
+          "verified": true
+        }
+      }
+    ]
+  },
+  {
+    "conversation_id": "PC024",
+    "turn": "4",
+    "expected_decision": "answer",
+    "expected_tool_calls": "",
+    "reply": "Yes—your ₹79 express fee was credited to your ZentroMart Wallet on 29 September 2026, as the late-delivery policy provides [DEL-4].",
+    "decision_correct": 1,
+    "tool_recall": null,
+    "evidence_recall": 1.0,
+    "status": "ok",
+    "decision": "answer",
+    "correctness": 1,
+    "judge_reason": "Accurately confirms the ₹79 express fee credit, date, and wallet destination, supported by the verified order and cited policy.",
+    "tool_calls": [
+      {
+        "name": "search_kb",
+        "arguments": {
+          "query": "My express delivery was late. Do I get the fee back?",
+          "rewritten_query": "Late express delivery fee refund for order 58634590; ₹79 credit recorded September 29, 2026 after delivery on September 28, 2026?"
+        },
+        "result": {
+          "section_ids": [
+            "DEL-4",
+            "REF-5",
+            "RET-6",
+            "DEL-2",
+            "PAY-2"
+          ]
+        }
+      }
+    ]
+  }
+]

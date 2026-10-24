@@ -1,0 +1,98 @@
+{
+  "file": "wallet_refund.wav",
+  "transcript": "how fast are refunds to the zentromart wallet",
+  "reply_text": "Hi, I’m ZentroMart’s AI support assistant. Refunds to the ZentroMart Wallet arrive instantly, within 2 hours of initiation. [REF-2]",
+  "reply_spoken_text": "Hi, I’m ZentroMart’s AI support assistant. Refunds to the ZentroMart Wallet arrive instantly, within 2 hours of initiation.",
+  "retrieved_chunks": [
+    {
+      "chunk_id": "pol_refunds:REF-2:0",
+      "section_id": "REF-2",
+      "doc": "pol_refunds.md",
+      "doc_type": "pol",
+      "status": "current",
+      "effective_from": "2026-06-15",
+      "doc_id": "POL-REF",
+      "version": "2.1",
+      "superseded_by": "",
+      "text": "Refunds policy\nHow long refunds take after initiation\n## [REF-2] How long refunds take after initiation Refunds go back to the original payment method. Timelines are counted in business days from the day the refund is initiated. | Payment method | Time to reach you | | --- | --- | | UPI | 1 to 3 business days | | Credit or debit card | 5 to 7 business days | | Net banking | 3 to 5 business days | | ZentroMart Wallet | Instant, within 2 hours | | Bank transfer (NEFT) for cash-on-delivery orders | 5 to 7 business days | | ZentroMart Wallet for cash-on-delivery orders | Instant, within 2 hours |",
+      "score": 0.03971
+    },
+    {
+      "chunk_id": "pol_refunds:REF-3:0",
+      "section_id": "REF-3",
+      "doc": "pol_refunds.md",
+      "doc_type": "pol",
+      "status": "current",
+      "effective_from": "2026-06-15",
+      "doc_id": "POL-REF",
+      "version": "2.1",
+      "superseded_by": "",
+      "text": "Refunds policy\nCash-on-delivery refunds\n## [REF-3] Cash-on-delivery refunds For cash-on-delivery orders, the customer chooses either ZentroMart Wallet (instant) or a bank transfer. Bank transfers start only after the bank account details are verified, then take 5 to 7 business days.",
+      "score": 0.039623
+    },
+    {
+      "chunk_id": "pol_returns_v4:RET-7:0",
+      "section_id": "RET-7",
+      "doc": "pol_returns_v4.md",
+      "doc_type": "pol",
+      "status": "current",
+      "effective_from": "2026-08-01",
+      "doc_id": "POL-RET",
+      "version": "4.0",
+      "superseded_by": "",
+      "text": "Returns policy\nAfter pickup\n## [RET-7] After pickup Returned items go through a quality check (QC) at the warehouse. The refund is initiated within 2 business days of pickup once the item passes QC. For ZentroMart Plus members, the refund is initiated at the time of pickup. Refund timelines after initiation are in the Refunds policy.",
+      "score": 0.03911
+    },
+    {
+      "chunk_id": "pol_payments_cod:PAY-4:0",
+      "section_id": "PAY-4",
+      "doc": "pol_payments_cod.md",
+      "doc_type": "pol",
+      "status": "current",
+      "effective_from": "2026-04-01",
+      "doc_id": "POL-PAY",
+      "version": "1.6",
+      "superseded_by": "",
+      "text": "Payments and cash on delivery\nZentroMart Wallet\n## [PAY-4] ZentroMart Wallet ZentroMart Wallet balance can be used on any order and never expires. It cannot be transferred to a bank account. For cash-on-delivery refunds, the customer chooses Wallet or bank transfer before the refund is made (REF-3); once refunded to the Wallet, it stays there.",
+      "score": 0.038327
+    },
+    {
+      "chunk_id": "00_about_this_knowledge_base:KB-00.3:0",
+      "section_id": "KB-00.3",
+      "doc": "00_about_this_knowledge_base.md",
+      "doc_type": "meta",
+      "status": "current",
+      "effective_from": "2026-08-01",
+      "doc_id": "KB-00",
+      "version": "1.2",
+      "superseded_by": "",
+      "text": "About this knowledge base\nBusiness days\n## [KB-00.3] Business days A business day is Monday to Saturday, excluding the warehouse holidays below. Refund and logistics timelines are counted in business days. Return windows are counted in calendar days. | Date | Holiday | | --- | --- | | 2026-08-15 | Independence Day | | 2026-10-02 | Gandhi Jayanti | | 2026-10-19 | Warehouse closure (festival) | | 2026-11-09 | Warehouse closure (festival) |",
+      "score": 0.019323
+    }
+  ],
+  "cited_section_ids": [
+    "REF-2"
+  ],
+  "tool_calls": [
+    {
+      "name": "search_kb",
+      "arguments": {
+        "query": "how fast are refunds to the zentromart wallet",
+        "rewritten_query": "ZentroMart wallet refund processing time"
+      },
+      "result": {
+        "section_ids": [
+          "REF-2",
+          "REF-3",
+          "RET-7",
+          "PAY-4",
+          "KB-00.3"
+        ]
+      }
+    }
+  ],
+  "latency_ms": 8134.9,
+  "mode": "audio",
+  "status": "ok",
+  "audio_file": "wallet_refund.reply.wav"
+}

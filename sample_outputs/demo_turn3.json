@@ -1,0 +1,154 @@
+{
+  "file": "demo_turn3.wav",
+  "transcript": "ok i want ₹500 compensation right now for this",
+  "reply_text": "I’m sorry, but I can’t approve or issue the ₹500 compensation; claims for damaged items worth over ₹10,000 are handled by Priority Resolution, and support agents cannot approve them. Your case has already been handed over to a human colleague under ticket ID TKTcd3f229d18bc40acbd60601c25380684. [DWM-3] [ESC-2] [ESC-4]",
+  "reply_spoken_text": "I’m sorry, but I can’t approve or issue the 500 rupees compensation; claims for damaged items worth over 10,000 rupees are handled by Priority Resolution, and support agents cannot approve them. Your case has already been handed over to a human colleague under ticket ending in 0 6 8 4.",
+  "retrieved_chunks": [
+    {
+      "chunk_id": "pol_damaged_wrong_missing:DWM-3:0",
+      "section_id": "DWM-3",
+      "doc": "pol_damaged_wrong_missing.md",
+      "doc_type": "pol",
+      "status": "current",
+      "effective_from": "2026-05-01",
+      "doc_id": "POL-DWM",
+      "version": "1.3",
+      "superseded_by": "",
+      "text": "Damaged, wrong or missing items policy\nHigh-value items\n## [DWM-3] High-value items Claims for items worth more than ₹10,000 are handled by the Priority Resolution team. The support agent must create a ticket and hand over; the agent cannot approve these claims.",
+      "score": 0.036763
+    },
+    {
+      "chunk_id": "pol_delivery_shipping:DEL-4:0",
+      "section_id": "DEL-4",
+      "doc": "pol_delivery_shipping.md",
+      "doc_type": "pol",
+      "status": "current",
+      "effective_from": "2026-04-01",
+      "doc_id": "POL-DEL",
+      "version": "2.0",
+      "superseded_by": "",
+      "text": "Delivery and shipping policy\nLate deliveries\n## [DEL-4] Late deliveries If an **Express** order arrives after its promised date, the ₹79 express fee the customer paid is credited to ZentroMart Wallet automatically within 48 hours. ZentroMart Plus members, who pay no express fee, get no credit. There is no compensation for late Standard deliveries. Agents must not offer any other compensation.",
+      "score": 0.036155
+    },
+    {
+      "chunk_id": "00_about_this_knowledge_base:KB-00.2:0",
+      "section_id": "KB-00.2",
+      "doc": "00_about_this_knowledge_base.md",
+      "doc_type": "meta",
+      "status": "current",
+      "effective_from": "2026-08-01",
+      "doc_id": "KB-00",
+      "version": "1.2",
+      "superseded_by": "",
+      "text": "About this knowledge base\nToday's date\n## [KB-00.2] Today's date All records in this dataset are frozen on **20 October 2026**. Treat this date as \"today\" when you calculate deadlines, delays and refund timelines.",
+      "score": 0.035155
+    },
+    {
+      "chunk_id": "agent_escalation_handoff:ESC-1:0",
+      "section_id": "ESC-1",
+      "doc": "agent_escalation_handoff.md",
+      "doc_type": "agent",
+      "status": "current",
+      "effective_from": "2026-07-01",
+      "doc_id": "AGT-ESC",
+      "version": "2.0",
+      "superseded_by": "",
+      "text": "Escalation and human handover\nWhen to hand over to a human\n## [ESC-1] When to hand over to a human Hand over at once when any of these is true: 1. **Damaged, defective or wrong item worth more than ₹10,000.** 2. **Customer reports an order, payment or account activity they did not make.** 3. **Customer mentions legal action, a consumer court or a police complaint.** 4. **Third or later contact about the same issue within 7 days.** 5. **Refund more than 3 business days past its maximum timeline.** 6. **Customer asks for a human agent.** 7. **Product safety risk such as a swelling battery, burning smell, sparks or injury.** For the repeat-contact rule, use the `contacts_last_7_days` field returned by order lookup. It counts earlier contacts only, not the current one. Escalate when it is 2 or more.",
+      "score": 0.034895
+    },
+    {
+      "chunk_id": "00_about_this_knowledge_base:KB-00.3:0",
+      "section_id": "KB-00.3",
+      "doc": "00_about_this_knowledge_base.md",
+      "doc_type": "meta",
+      "status": "current",
+      "effective_from": "2026-08-01",
+      "doc_id": "KB-00",
+      "version": "1.2",
+      "superseded_by": "",
+      "text": "About this knowledge base\nBusiness days\n## [KB-00.3] Business days A business day is Monday to Saturday, excluding the warehouse holidays below. Refund and logistics timelines are counted in business days. Return windows are counted in calendar days. | Date | Holiday | | --- | --- | | 2026-08-15 | Independence Day | | 2026-10-02 | Gandhi Jayanti | | 2026-10-19 | Warehouse closure (festival) | | 2026-11-09 | Warehouse closure (festival) |",
+      "score": 0.02186
+    },
+    {
+      "chunk_id": "pol_damaged_wrong_missing:DWM-2:0",
+      "section_id": "DWM-2",
+      "doc": "pol_damaged_wrong_missing.md",
+      "doc_type": "pol",
+      "status": "current",
+      "effective_from": "2026-05-01",
+      "doc_id": "POL-DWM",
+      "version": "1.3",
+      "superseded_by": "",
+      "text": "Damaged, wrong or missing items policy\nResolution\n## [DWM-2] Resolution After verification the customer gets a free replacement or a full refund, including delivery fees. No reverse pickup fee applies.",
+      "score": 0.026472
+    },
+    {
+      "chunk_id": "agent_escalation_handoff:ESC-2:0",
+      "section_id": "ESC-2",
+      "doc": "agent_escalation_handoff.md",
+      "doc_type": "agent",
+      "status": "current",
+      "effective_from": "2026-07-01",
+      "doc_id": "AGT-ESC",
+      "version": "2.0",
+      "superseded_by": "",
+      "text": "Escalation and human handover\nWhat to do first\n## [ESC-2] What to do first Create a ticket with `create_ticket` before handing over. Tell the customer a human colleague will contact them, and never promise an outcome, amount or time beyond what a policy states.",
+      "score": 0.024969
+    },
+    {
+      "chunk_id": "agent_escalation_handoff:ESC-4:0",
+      "section_id": "ESC-4",
+      "doc": "agent_escalation_handoff.md",
+      "doc_type": "agent",
+      "status": "current",
+      "effective_from": "2026-07-01",
+      "doc_id": "AGT-ESC",
+      "version": "2.0",
+      "superseded_by": "",
+      "text": "Escalation and human handover\nThings you must never do\n## [ESC-4] Things you must never do - Promise compensation, refunds or exceptions that a policy does not allow. - Say an action is done unless the tool call succeeded. - Share another customer's details.",
+      "score": 0.024841
+    }
+  ],
+  "cited_section_ids": [
+    "DWM-3",
+    "ESC-2",
+    "ESC-4"
+  ],
+  "tool_calls": [
+    {
+      "name": "search_kb",
+      "arguments": {
+        "query": "ok i want ₹500 compensation right now for this",
+        "rewritten_query": "₹500 compensation claim for damaged TV on order 89782837, delivered 15 October 2026"
+      },
+      "result": {
+        "section_ids": [
+          "DWM-3",
+          "DEL-4",
+          "KB-00.2",
+          "ESC-1",
+          "KB-00.3"
+        ]
+      }
+    },
+    {
+      "name": "search_kb",
+      "arguments": {
+        "query": "Current policy damaged high-value item compensation request, whether support can approve or promise compensation; priority resolution handling after ticket escalated"
+      },
+      "result": {
+        "section_ids": [
+          "DWM-3",
+          "DWM-2",
+          "ESC-2",
+          "ESC-4",
+          "KB-00.3"
+        ]
+      }
+    }
+  ],
+  "latency_ms": 23043.6,
+  "mode": "audio",
+  "status": "ok",
+  "audio_file": "demo_turn3.reply.wav"
+}
