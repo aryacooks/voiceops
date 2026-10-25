@@ -234,3 +234,13 @@ def test_logged_order_id_drops_the_callers_spacing():
     assert plain_order_id({'order_id':'1859 9253','pincode':'560001'})=={'order_id':'18599253','pincode':'560001'}
     assert plain_order_id({'order_id':'1859-925'})['order_id']=='1859925'
     assert plain_order_id({'order_id':'ORD 1859'})['order_id']=='ORD 1859'
+
+def test_inspector_tells_a_request_for_proof_from_a_failed_check():
+    from zentro.inspector import tool_result
+    from zentro.tools_adapter import audit_call
+    asked=audit_call('lookup_order',{'order_id':'18599253','phone_last4':'','pincode':''},{'verification_required':True,'order_id':'18599253'})
+    assert asked['arguments']=={'order_id':'18599253'}
+    assert tool_result('lookup_order',asked['arguments'],asked['result'])[1]=='muted'
+    failed=audit_call('lookup_order',{'order_id':'18599253','phone_last4':'1234'},{'verified':False,'verification_required':True})
+    assert failed['arguments']['phone_last4']=='[redacted]'
+    assert tool_result('lookup_order',failed['arguments'],failed['result'])==('Verification detail did not match','bad')

@@ -172,7 +172,8 @@ def plain_order_id(args):
     return args|{'order_id':compact} if compact.isdigit() else args
 
 def audit_call(name,args,result):
-    public_args={k:('[redacted]' if k in ('phone_last4','pincode') and name=='lookup_order' else redact(v) if isinstance(v,str) else v) for k,v in args.items()}
+    public_args={k:('[redacted]' if k in ('phone_last4','pincode') and name=='lookup_order' else redact(v) if isinstance(v,str) else v)
+                 for k,v in args.items() if not (name=='lookup_order' and k in ('phone_last4','pincode') and not v)}
     if name=='lookup_order': public_result={k:v for k,v in result.items() if k in ('found','verified','verification_required','locked','error','message')}
     elif name=='search_kb': public_result={'section_ids':[c['section_id'] for c in result.get('chunks',[])]}
     else: public_result=result

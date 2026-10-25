@@ -26,9 +26,9 @@ def tool_result(name,args,result):
     if name=='lookup_order':
         if result.get('locked'): return 'Locked after two failed checks; no order details shared','bad'
         if result.get('verified'): return 'Caller verified, order details unlocked','ok'
-        if result.get('verification_required') and not (args.get('phone_last4') or args.get('pincode')):
-            return 'Order found; asked the caller for a verification detail','muted'
-        if result.get('verification_required'): return 'Verification detail did not match','bad'
+        # The tool sets verified=False only when a detail was checked and failed.
+        if result.get('verification_required') and result.get('verified') is False: return 'Verification detail did not match','bad'
+        if result.get('verification_required'): return 'Order found; asked the caller for a verification detail','muted'
         return json.dumps(result,ensure_ascii=False)[:160],'muted'
     if name=='create_ticket':
         if result.get('uncertain'): return 'Timed out; the ticket may or may not have been saved','warn'
