@@ -160,3 +160,64 @@ def test_offer_to_hand_over_survives_without_a_ticket():
     reply=guard_reply("I don't have information about refunds sent to a closed bank account, but I can connect you with a human colleague to check. Would you like me to?",[],[])
     assert 'connect you with a human colleague' in reply
     assert 'escalated' not in guard_reply('I have escalated this to a human agent.',[],[])
+
+from zentro.rules import refund_calc,express_eta,refund_status,escalation_triggers
+
+def test_refund_calc_coupon_clawback_and_pickup_fee():
+    items=[{'price':1000,'qty':1,'category':'fashion'},{'price':600,'qty':1,'category':'fashion','return_qty':1}]
+    assert refund_calc(items,160,1500,'change_of_mind')['refund_inr']==391
+    assert refund_calc(items,160,1500,'change_of_mind',is_plus=True)['refund_inr']==440
+    assert refund_calc(items,160,1500,'damaged',delivery_fee=40)['refund_inr']==480
+    assert refund_calc([{'price':629,'qty':1,'category':'grocery','return_qty':1}],reason='change_of_mind')['eligible'] is False
+
+def test_express_eta_cutoff_and_holiday():
+    assert express_eta('2026-10-17T15:00')['expected']=='2026-10-21'
+    assert express_eta('2026-10-17T13:59')['expected']=='2026-10-20'
+
+def test_refund_status_escalates_only_past_three_days():
+    assert refund_status('2026-10-12','upi')['business_days_past_max']==3
+    assert refund_status('2026-10-12','upi')['escalate'] is False
+    assert refund_status('2026-10-10','upi')['escalate'] is True
+    assert refund_status('2026-10-17','card')['arrives_between']==['2026-10-24','2026-10-27']
+    assert refund_status('2026-09-05','upi','2026-09-07','6274')['status']=='completed'
+
+@pytest.mark.parametrize('text,rules',[
+ ('connect me to a human NOW',{'ESC-1 #6'}),("I don't want to talk to a human",set()),
+ ("I'm not happy, connect me to a human",{'ESC-1 #6'}),('the power bank is swelling',{'ESC-1 #7'}),
+ ("it's not swelling, just warm",set()),('payment alert for a purchase I didn\'t make',{'ESC-1 #2'}),
+ ("received something I didn't order",set()),('taking you to consumer court',{'ESC-1 #3'})])
+def test_text_escalation_triggers(text,rules): assert {t['rule'] for t in escalation_triggers(text)}==rules
+
+def test_data_escalation_triggers():
+    tv={'sku':'ELE-0021','title':'Zentro Vista 43-inch 4K Smart TV','unit_price_inr':31649}
+    monitor={'sku':'ELE-0099','title':'Orbix Studio Monitor','unit_price_inr':10000}
+    assert {t['rule'] for t in escalation_triggers('status?',{'contacts_last_7_days':2})}=={'ESC-1 #4'}
+    assert {t['rule'] for t in escalation_triggers('the TV screen is cracked',{'items':[tv,{'title':'Tote','unit_price_inr':979}]})}=={'ESC-1 #1'}
+    assert escalation_triggers('the monitor is cracked',{'items':[monitor]})==[]
+    assert escalation_triggers('when is my tote coming',{'items':[tv]})==[]
+    late={'return_refund_initiated_on':'2026-07-20','return_refund_method':'upi'}
+    assert {t['rule'] for t in escalation_triggers('where is my refund',late)}=={'ESC-1 #5'}
+
+def test_agent_files_ticket_when_trigger_holds_and_model_does_not():
+    agent=Agent(retriever=Search(),complete=lambda *a,**k:ChatCompletionMessage(role='assistant',content='Please stop using it immediately [DWM-5].'),rewrite=None)
+    agent.adapter.module.create_ticket=lambda **k:{'created':True,'ticket_id':'TKT'+'ab'*16}
+    answer=agent.respond('my power bank is swelling and hot')
+    assert 'TKT'+'ab'*16 in answer['reply'] and any(c['name']=='create_ticket' for c in answer['tool_calls'])
+    calm=Agent(retriever=Search(),complete=lambda *a,**k:ChatCompletionMessage(role='assistant',content='Returns are free [RET-6].'),rewrite=None)
+    assert not any(c['name']=='create_ticket' for c in calm.respond("I don't need a human, just tell me about returns")['tool_calls'])
+
+def test_calculator_numbers_come_from_the_kb(tmp_path,monkeypatch):
+    import importlib,shutil
+    import zentro.config,zentro.rules
+    shutil.copytree(DATASET_DIR/'kb',tmp_path/'kb')
+    fee=tmp_path/'kb'/'pol_returns_v4.md'; fee.write_text(fee.read_text().replace('reverse pickup fee of ₹49','reverse pickup fee of ₹59'))
+    monkeypatch.setattr(zentro.config,'DATASET_DIR',tmp_path)
+    try: assert importlib.reload(zentro.rules).PICKUP_FEE==59
+    finally:
+        monkeypatch.undo(); importlib.reload(zentro.rules)
+    assert zentro.rules.PICKUP_FEE==49 and zentro.rules.WINDOWS['card']==(5,7) and zentro.rules.HIGH_VALUE==10000
+
+def test_customer_stated_figures_can_be_repeated_back():
+    from zentro.agent import ungrounded
+    assert not ungrounded('You said the product was worth ₹13,000.',[],said='the product worth 13000 is damaged')
+    assert ungrounded('The product was worth ₹15,000.',[],said='the product worth 13000 is damaged')

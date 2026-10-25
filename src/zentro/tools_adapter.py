@@ -3,6 +3,7 @@ import re
 from .config import DATASET_DIR
 from .dates import date_calc
 from .data import catalog_lookup, is_pincode_serviceable
+from .rules import refund_calc, express_eta, refund_status, record_refund
 
 def function(name, description, properties, required):
     return {'type':'function','function':{'name':name,'description':description,
@@ -18,7 +19,20 @@ function('date_calc','Deterministic arithmetic. Start excluded, today=2026-10-20
  {'op':{'type':'string','enum':['today','add_business_days','add_calendar_days','calendar_days_between','business_days_between']},
   'start':string('ISO date YYYY-MM-DD'),'end':string('ISO date YYYY-MM-DD'),'days':{'type':'integer'}},['op']),
 function('catalog_lookup','Read public product catalog facts.',{'sku':string('Exact SKU, e.g. ELE-0012')},['sku']),
-function('is_pincode_serviceable','Read public pincode availability.',{'pincode':string('6 digit pincode')},['pincode'])]
+function('is_pincode_serviceable','Read public pincode availability.',{'pincode':string('6 digit pincode')},['pincode']),
+function('refund_calc','Exact refund for a return: coupon share and clawback (REF-4), reverse pickup fee (RET-6), delivery/COD fees (REF-5). '
+ 'For the verified order pass return_lines; for a hypothetical pass items. Never do this arithmetic yourself.',
+ {'return_lines':{'type':'array','description':'Verified order: lines being returned','items':{'type':'object','properties':{'line_no':{'type':'integer'},'qty':{'type':'integer'}},'required':['line_no','qty']}},
+  'items':{'type':'array','description':'Hypothetical order: every item, with return_qty on the returned ones','items':{'type':'object',
+   'properties':{'price':{'type':'number'},'qty':{'type':'integer'},'category':string('return_category code, e.g. fashion'),'return_qty':{'type':'integer'}},'required':['price','qty']}},
+  'coupon_discount':{'type':'number'},'coupon_min_order':{'type':'number'},
+  'reason':{'type':'string','enum':['change_of_mind','damaged','defective','wrong_item','missing_item']},
+  'is_plus':{'type':'boolean'},'delivery_fee':{'type':'number'},'cod_fee':{'type':'number'},'before_shipping':{'type':'boolean'}},[]),
+function('express_eta','Express arrival date from the order time (cutoff rule in DEL-1). Omit placed_at to use the verified order.',
+ {'placed_at':string('ISO date-time the order was placed, e.g. 2026-10-17T15:00')},[]),
+function('refund_status','Refund arrival window (REF-2), business days past the maximum, and whether ESC-1 #5 applies. '
+ 'Omit arguments to use the verified order\'s refund.',
+ {'initiated_on':string('ISO date the refund was initiated'),'method':{'type':'string','enum':['upi','card','netbanking','wallet','cod_wallet','cod_bank']}},[])]
 
 def load_dataset_tools():
     spec=importlib.util.spec_from_file_location('zentro_dataset_tools',DATASET_DIR/'tools/tools.py')
@@ -79,6 +93,25 @@ class ToolAdapter:
         if name=='date_calc': return date_calc(**args)
         if name=='catalog_lookup': return {'products':catalog_lookup(args['sku'])}
         if name=='is_pincode_serviceable': return is_pincode_serviceable(args['pincode'])
+        record=self.verified_orders.get(self.current_order)
+        if name=='refund_calc':
+            if args.get('return_lines'):
+                if not record: return {'error':'Verify the order first, or pass items for a hypothetical.'}
+                chosen={int(l['line_no']):int(l['qty']) for l in args['return_lines']}
+                items=[{'price':i['unit_price_inr'],'qty':i['qty'],'category':i['return_category'],'return_qty':min(chosen.get(int(i['line_no']),0),i['qty'])} for i in record['items']]
+                return refund_calc(items,record.get('coupon_discount_inr') or 0,record.get('coupon_min_order_inr') or 0,args.get('reason'),
+                                   bool(record.get('is_plus')),record.get('delivery_fee_inr') or 0,record.get('cod_fee_inr') or 0,bool(args.get('before_shipping')))
+            if not args.get('items'): return {'error':'Pass return_lines (verified order) or items (hypothetical).'}
+            return refund_calc(args['items'],args.get('coupon_discount') or 0,args.get('coupon_min_order') or 0,args.get('reason'),
+                               bool(args.get('is_plus')),args.get('delivery_fee') or 0,args.get('cod_fee') or 0,bool(args.get('before_shipping')))
+        if name=='express_eta':
+            placed=args.get('placed_at') or (record or {}).get('placed_at')
+            return express_eta(placed) if placed else {'error':'Ask when the order was placed (date and time).'}
+        if name=='refund_status':
+            if args.get('initiated_on') and args.get('method'): return refund_status(args['initiated_on'],args['method'])
+            refund=record_refund(record) if record else None
+            if not refund: return {'error':'No refund on a verified order; ask for the order ID or the initiation date and method.'}
+            return {'refund':refund['kind']}|refund_status(refund['initiated_on'],refund['method'],refund['completed_on'],refund['rrn'])
         if name=='lookup_order':
             oid=re.sub(r'\D','',str(args['order_id']))
             if len(oid)!=8: return {'error':'Order IDs are 8 digits; ask the caller to re-check it.'}

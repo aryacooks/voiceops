@@ -4,6 +4,7 @@ from . import llm
 from .prompts import AGENT, GROUNDING, BASE
 from .tools_adapter import ToolAdapter, TOOLS, audit_call, redact
 from .retriever import Retriever
+from .rules import escalation_triggers
 
 SENTENCE=r'(?<=[.!?।])\s+'
 CITATION = re.compile(r'\[([A-Za-z][A-Za-z0-9_.:-]+)\]')
@@ -12,9 +13,11 @@ IDK="I'm sorry, I don't have that information. I can connect you to a human coll
 FACT=re.compile(r"₹|\brupees?\b|\bfree\b|\b\d+\s*(?:(?:to|-|–)\s*\d+\s*)?(?:business\s+|calendar\s+|working\s+)?(?:days?|hours?|months?|weeks?|din|दिन|घंटे|%)",re.I)
 ADMITS=re.compile(r"don't have|do not have|don't know|not sure|cannot|can't|couldn't|insufficient|नहीं है|pata nahi",re.I)
 
-def ungrounded(reply,chunks):
-    """Stated facts with no valid citation (questions are exempt)."""
-    statements=[s for s in re.split(SENTENCE,reply) if not s.rstrip().endswith('?')]
+def numbers(text): return {n.replace(',','') for n in re.findall(r'\d[\d,]*',str(text))}
+def ungrounded(reply,chunks,said=''):
+    """Stated facts with no valid citation (questions, and figures the customer gave us, are exempt)."""
+    heard=numbers(said)
+    statements=[s for s in re.split(SENTENCE,reply) if not s.rstrip().endswith('?') and not (numbers(s) and numbers(s)<=heard)]
     return not citations(reply,chunks) and any(FACT.search(s) for s in statements) and not ADMITS.search(reply)
 
 def citations(reply,chunks):
@@ -80,6 +83,8 @@ def guard_reply(reply,calls,chunks,first=False,verified=False,session_tickets=()
         reply="I'm ZentroMart's AI support assistant. "+reply
     return reply
 
+CALCULATORS={'date_calc','refund_calc','express_eta','refund_status'}
+
 class Agent:
     def __init__(self,retriever=None,complete=None,rewrite=None):
         self.retriever=retriever or Retriever()
@@ -93,6 +98,20 @@ class Agent:
         self.issue=''
         self.language='en-IN'
         self.adapter=ToolAdapter(self.retriever)
+    def enforce_escalation(self,text):
+        """ESC-1 triggers are facts, not judgement: if one holds and no handover exists, file the ticket ourselves."""
+        adapter=self.adapter
+        if adapter.tickets or adapter.ticket_uncertain or any(c['name']=='create_ticket' for c in self.last_raw_calls): return []
+        triggers=escalation_triggers(text+' '+self.issue,adapter.verified_orders.get(adapter.current_order))
+        if not triggers: return []
+        reasons='; '.join(f"{t['rule']}: {t['reason']}" for t in triggers)
+        summary=f"Automatic handover. Issue: {self.issue or adapter.sanitize(text)[:300]}. Order: {adapter.current_order or 'none given'} "\
+                f"(verified: {adapter.public_state()['verified']}). Reason: {reasons}."
+        args={'summary':summary,'reason':reasons}
+        try: result=adapter.execute('create_ticket',args)
+        except (ValueError,TypeError,KeyError,OSError) as exc: result={'created':False,'error':str(exc)}
+        self.last_raw_calls.append({'name':'create_ticket','arguments':args,'result':result})
+        return [json.loads(adapter.sanitize(json.dumps(audit_call('create_ticket',args,result),ensure_ascii=False)))]
     def respond(self,text):
         if not str(text).strip(): return {'reply':"Sorry, I didn't catch that. Could you say it again?",'chunks':[],'tool_calls':[],'state':self.adapter.public_state()}
         self.last_raw_calls=[]
@@ -108,7 +127,8 @@ class Agent:
         # Seven slots: the KB-00 rules attached to most results would otherwise crowd policy out of the top five.
         chunks=self.retriever.search(text,k=7,rewrite=query) if query else self.retriever.search(text,k=7)
         calls=[audit_call('search_kb',{'query':self.adapter.sanitize(text),'rewritten_query':self.adapter.sanitize(query)},{'chunks':chunks})]
-        context={'state':self.adapter.public_state(),'verified_order':self.adapter.order_record(),'tickets_created_this_session':sorted(self.adapter.tickets),'summary':self.summary,'issue':self.issue,'language':self.language,'evidence':chunks}
+        triggers=escalation_triggers(text+' '+self.issue,self.adapter.verified_orders.get(self.adapter.current_order))
+        context={'escalation_required':triggers,'state':self.adapter.public_state(),'verified_order':self.adapter.order_record(),'tickets_created_this_session':sorted(self.adapter.tickets),'summary':self.summary,'issue':self.issue,'language':self.language,'evidence':chunks}
         messages=[{'role':'system','content':AGENT+'\nTrusted session context: '+json.dumps(context,ensure_ascii=False)}]
         for turn in self.turns[-12:]:
             messages.extend([{'role':'user','content':turn['user']},{'role':'assistant','content':turn['reply']}])
@@ -146,7 +166,9 @@ class Agent:
                 messages.append({'role':'tool','tool_call_id':call.id,'content':json.dumps(result,ensure_ascii=False)})
         if not reply:
             reply="I couldn't complete the checks for that request. Could you rephrase the issue?"
-        if ungrounded(reply,chunks) and not any(c['result'].get('verified') or c['result'].get('created') or c['name']=='date_calc' for c in calls):
+        calls+=self.enforce_escalation(text)
+        said=' '.join([t['user'] for t in self.turns]+[self.adapter.sanitize(text)])
+        if ungrounded(reply,chunks,said) and not any(c['result'].get('verified') or c['result'].get('created') or c['name'] in CALCULATORS for c in calls):
             reply=IDK
         known={c['section_id'] for c in chunks}
         for chunk in getattr(self.retriever,'chunks',[]):
