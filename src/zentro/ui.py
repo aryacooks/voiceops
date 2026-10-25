@@ -92,6 +92,8 @@ ICONS = {
     "cart": svg('<path d="M8.49994 10H41L37.569 21.4367C36.9345 23.5517 34.9879 25 32.7798 25H10.4999"/><path d="M11 45C13.2091 45 15 43.2091 15 41C15 38.7909 13.2091 37 11 37C8.79086 37 7 38.7909 7 41C7 43.2091 8.79086 45 11 45Z"/><path d="M37 45C39.2091 45 41 43.2091 41 41C41 38.7909 39.2091 37 37 37C34.7909 37 33 38.7909 33 41C33 43.2091 34.7909 45 37 45Z"/><path d="M41 32H9.46174C7.17727 32 6.08953 29.1885 7.77914 27.651L10.6923 25L7.81067 5.14103C7.63231 3.91188 6.57863 3.00005 5.33661 3.00003L3 3"/><g class="ih-items"><path d="M30 16L30 19"/><path d="M24 16L24 19"/><path d="M18 16L18 19"/></g>', view="0 0 48 48"),
     "mic": svg('<path d="M9 5a3 3 0 0 1 3 -3a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3a3 3 0 0 1 -3 -3z"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M8 21l8 0"/><path d="M12 17l0 4"/>'),
     "stop": svg('<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"/>'),
+    "chat": svg('<path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/>'),
+    "panel": svg('<path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1z"/><path d="M15 4v16"/>'),
 }
 
 
@@ -99,6 +101,14 @@ HEADER = f"""
 <div class="zm-brand">
   <span class="zm-logo">{ICONS['cart']}</span>
   <span><span class="zm-name">ZentroMart</span><span class="zm-sub">{ICONS['sparkles']} AI support assistant · speak or type</span></span>
+</div>
+"""
+
+
+VIEW_SWITCH = f"""
+<div class="zm-views" role="group" aria-label="Choose a view">
+  <button type="button" class="zm-view" id="zm-view-consumer" aria-label="Consumer view" aria-pressed="true" title="Conversation only">{ICONS['chat']}<span>Consumer</span></button>
+  <button type="button" class="zm-view" id="zm-view-judge" aria-label="Judge view" aria-pressed="false" title="Conversation with the full inspector">{ICONS['panel']}<span>Judge</span></button>
 </div>
 """
 
@@ -122,6 +132,7 @@ COMPOSER = f"""
   </div>
 </div>
 <p id="zm-note">Enter to send · Shift+Enter for a new line · tap the mic, speak, then tap send</p>
+<button type="button" id="zm-peek" aria-controls="details" aria-expanded="false">{ICONS['panel']}<span>Behind the scenes</span></button>
 """
 
 
@@ -257,10 +268,32 @@ HEAD = """
     player.onended = player.onpause = () => btn.classList.remove('playing');
   }
 
+  // Views are a class on <html>: switching never re-renders, so chat, audio and inspector stay as they are.
+  const root = document.documentElement;
+  function setView(view) {
+    root.classList.toggle('zm-judge', view === 'judge');
+    root.classList.remove('zm-peek');
+    syncView();
+    try { localStorage.setItem('zm-view', view); } catch (e) { /* storage may be blocked */ }
+  }
+  function syncView() {
+    const judge = root.classList.contains('zm-judge'), peek = root.classList.contains('zm-peek');
+    $('#zm-view-judge')?.setAttribute('aria-pressed', String(judge));
+    $('#zm-view-consumer')?.setAttribute('aria-pressed', String(!judge));
+    const p = $('#zm-peek');
+    if (p) { p.setAttribute('aria-expanded', String(peek)); p.querySelector('span').textContent = peek ? 'Hide behind the scenes' : 'Behind the scenes'; }
+  }
+  try { if (localStorage.getItem('zm-view') === 'judge') root.classList.add('zm-judge'); } catch (e) { /* default view */ }
+  document.addEventListener('DOMContentLoaded', syncView);
+  new MutationObserver((_, obs) => { if ($('#zm-peek')) { syncView(); obs.disconnect(); } }).observe(root, { childList: true, subtree: true });
+
   document.addEventListener('click', e => {
     const b = e.target.closest('button');
     if (!b) return;
-    if (b.id === 'zm-send') sendText();
+    if (b.id === 'zm-view-judge') setView('judge');
+    else if (b.id === 'zm-view-consumer') setView('consumer');
+    else if (b.id === 'zm-peek') { root.classList.toggle('zm-peek'); syncView(); if (root.classList.contains('zm-peek')) $('#details')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    else if (b.id === 'zm-send') sendText();
     else if (b.id === 'zm-mic') startRec();
     else if (b.id === 'zm-stop') stopRec(false);
     else if (b.id === 'zm-cancel') stopRec(true);
@@ -300,7 +333,7 @@ CSS = """
 :root, body, .dark { color-scheme: light; background: #f4f0e9 !important; }
 body { margin: 0; -webkit-font-smoothing: antialiased; }
 .gradio-container {
-    width: 100% !important; max-width: 820px !important;
+    width: 100% !important; max-width: 1360px !important;
     margin: 0 auto !important; padding: 0 20px 24px !important;
     font-family: 'Helvetica Neue', Arial, sans-serif !important;
     color: #211e1b !important; background: #f4f0e9 !important;
@@ -315,7 +348,7 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
 .gradio-container label > span { background: transparent !important; }
 .zm-icon { width: 20px; height: 20px; flex: none; overflow: visible; }
 /* Gradio's .prose * rule recolours everything inside gr.HTML; icons follow their own control instead. */
-.zm-btn *, .zm-logo *, .zm-play *, .zm-sub *, .empty-mark *, .zm-vtag * { color: inherit !important; }
+.zm-btn *, .zm-logo *, .zm-play *, .zm-sub *, .empty-mark *, .zm-vtag *, .zm-view *, #zm-peek * { color: inherit !important; }
 
 /* Header */
 #topbar { position: sticky; top: 0; z-index: 5; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 12px;
@@ -327,6 +360,14 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
 .zm-name { display: block; font-size: 17px; font-weight: 650; letter-spacing: -.4px; line-height: 1.2; }
 .zm-sub { display: flex; align-items: center; gap: 4px; color: #7d6f62; font-size: 12px; margin-top: 2px; }
 .zm-sub .zm-icon { width: 13px; height: 13px; color: #a3825f; }
+#topbar > div:first-child { flex: 1 1 auto !important; }
+#view-switch { flex: 0 0 auto !important; width: auto !important; min-width: 0 !important; margin-left: auto; }
+.zm-views { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; background: #ffffff; border: 1px solid #e3dcd2; }
+.zm-view { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 999px; padding: 6px 12px; background: transparent;
+    color: #45392e; font-size: 12.5px; font-weight: 550; cursor: pointer; transition: background-color 150ms ease; }
+.zm-view .zm-icon { width: 16px; height: 16px; }
+.zm-view:hover { background: #f1ebe2; }
+.zm-view[aria-pressed="true"] { background: #211e1b; color: #fbf8f3; }
 #reset { flex: 0 0 auto; width: auto !important; min-width: 0 !important; padding: 7px 12px !important; font-size: 12px !important;
     border-radius: 999px !important; display: inline-flex; gap: 6px; align-items: center; }
 
@@ -424,14 +465,32 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
 @keyframes ih-wave { 50% { opacity: .3; } }
 @keyframes ih-bounce { 40% { transform: translateY(-3px); } }
 
-/* Behind the scenes */
-#details { margin-top: 22px; border-top: 1px solid #dcd4c9 !important; padding-top: 14px !important; background: transparent !important; }
-#details > button { padding: 0 !important; font-size: 14px; font-weight: 600; color: #3b2f25; }
-#details > div { padding: 12px 0 0 !important; }
-#ins-toolbar { align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 4px; }
-#ins-toolbar > div { flex: 1 1 320px; min-width: 0; }
+/* Workspace: conversation left, "Behind the answer" right in Judge view */
+#workspace { align-items: flex-start; flex-wrap: nowrap; gap: 28px; }
+#convo-col { min-width: 0 !important; }
+html:not(.zm-judge):not(.zm-peek) #details { display: none !important; }
+html:not(.zm-judge):not(.zm-peek) #convo-col { max-width: 820px; margin: 0 auto; }
+html.zm-judge #zm-peek { display: none !important; }
+#zm-peek { display: flex; align-items: center; gap: 6px; margin: 10px auto 0; padding: 6px 14px; border-radius: 999px; border: 1px solid #ddd5ca;
+    background: #ffffff; color: #5e4532; font-size: 12px; font-weight: 550; cursor: pointer; }
+#zm-peek:hover { background: #f1ebe2; }
+#zm-peek .zm-icon { width: 15px; height: 15px; }
+#details { position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow-y: auto; overscroll-behavior: contain;
+    padding: 18px 4px 18px 26px !important; border-left: 1px solid #e3dcd2; background: transparent !important; gap: 12px; }
+#ins-toolbar { flex: none !important; flex-direction: column; align-items: stretch; gap: 10px; margin-bottom: 2px; }
+#details { display: flex; flex-direction: column !important; flex-wrap: nowrap !important; }
+#details > #inspector, #details > #ins-toolbar { flex: none !important; width: 100% !important; }
+#ins-toolbar > div { min-width: 0; }
+.ins-panel-title { margin: 0 0 4px !important; font-size: 20px !important; font-weight: 650 !important; letter-spacing: -.4px; color: #211e1b !important; }
+.ins-note { margin: 0 !important; padding: 8px 12px; border-radius: 10px; background: #fbf1e6; color: #7a4f2c; font-size: 12.5px; line-height: 1.5; }
+.ins-kicker.preview { color: #9a5b2c; }
+.ins-step.warn .ins-dot { border-color: #b07a2a; background: #fbefd9; }
+.ins-step.warn .ins-res { color: #8a5a16; }
+.ins-full summary { cursor: pointer; font-size: 11.5px; color: #8a7d70; margin-top: 4px; }
+.ins-full pre { max-height: 240px; overflow: auto; margin: 6px 0 0; padding: 10px; border-radius: 8px; background: #fcfaf7;
+    border: 1px solid #ece5db; font-size: 11px; line-height: 1.5; color: #5e4532; white-space: pre-wrap; word-break: break-word; }
 .ins-intro { margin: 0; font-size: 12.5px; line-height: 1.6; color: #817264; }
-#inspect { flex: 0 0 auto; width: auto !important; min-width: 0 !important; border-radius: 999px !important; padding: 7px 14px !important;
+#inspect { flex: 0 0 auto; align-self: flex-start; width: auto !important; min-width: 0 !important; border-radius: 999px !important; padding: 7px 14px !important;
     background: #ffffff !important; color: #5e4532 !important; border: 1px solid #ddd5ca !important; font-size: 12px !important; }
 #inspect:hover { background: #f1ebe2 !important; }
 #inspector, #inspector .prose { background: transparent !important; }
@@ -491,15 +550,24 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
 .ins-session span { display: block; font-size: 11px; color: #8a7d70; }
 .ins-session b { font-size: 13px; font-weight: 600; color: #211e1b; word-break: break-all; }
 .ins-raw summary { cursor: pointer; font-size: 12px; color: #817264; }
-.ins-raw pre { max-height: 320px; overflow: auto; margin: 8px 0 0; padding: 12px; border-radius: 10px; background: #ffffff;
+.ins-raw pre { max-height: 320px; overflow: auto; margin: 8px 0 0; padding: 12px; border-radius: 10px; background: #ffffff; white-space: pre-wrap; word-break: break-word;
     border: 1px solid #e7e0d6; font-size: 11px; line-height: 1.5; color: #5e4532; }
 #app-footer { background: transparent; padding: 18px 0 0; }
 #app-footer p { font-size: 11px; color: #75695d; margin: 0; text-align: center; }
+@media (max-width: 900px) {
+    #workspace { flex-direction: column; gap: 0; }
+    #convo-col, #details { width: 100% !important; max-width: none !important; }
+    #details { position: static; max-height: none; overflow: visible; border-left: 0; border-top: 1px solid #e3dcd2;
+        padding: 18px 0 0 !important; margin-top: 18px; }
+}
 @media (max-width: 640px) {
+    .zm-view { padding: 6px 9px; }
+    .zm-view span { display: none; }
     .gradio-container { padding: 0 12px 18px !important; }
     #conversation .message-row { max-width: 90% !important; }
     .zm-sub { display: none; }
     #zm-hint { display: none; }
+    #reset { font-size: 0 !important; gap: 0 !important; padding: 8px !important; }
 }
 @media (prefers-reduced-motion: reduce) {
     .gradio-container *, .gradio-container *::before, .gradio-container *::after { transition: none !important; animation: none !important; }

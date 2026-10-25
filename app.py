@@ -14,7 +14,7 @@ from zentro import inspector
 from zentro.agent import Agent, citations
 from zentro.speech import Speech, usable_transcript, REPEAT
 from zentro.tools_adapter import redact
-from zentro.ui import COMPOSER, CSS, EMPTY_CONVERSATION, HEAD, HEADER, ICONS, build_theme
+from zentro.ui import COMPOSER, CSS, EMPTY_CONVERSATION, HEAD, HEADER, ICONS, VIEW_SWITCH, build_theme
 
 # Gnani replies are served from here; launch() allows only this folder.
 REPLY_DIR=Path(tempfile.gettempdir())/'zentro-replies'
@@ -103,7 +103,10 @@ def respond(state):
         return state['history'],panel,status,state
     except Exception as exc:
         shown=state['agent'].adapter.sanitize(transcript) if state['agent'] else redact(transcript)
-        status=f'{type(exc).__name__}: {redact(str(exc))}'
+        shown=shown or ('(audio could not be read)' if audio else '(no message)')
+        detail=(redact(str(exc)).strip().splitlines() or [''])[0][:160]
+        if audio and type(exc).__name__=='CouldntDecodeError': status="Couldn't read that audio file. Try another recording, or type instead."
+        else: status=f'{type(exc).__name__}: {detail}' if detail else type(exc).__name__
         panel=inspector.render(shown,getattr(exc,'retrieved_chunks',[]),getattr(exc,'tool_calls',[]),(),session(state),timings,status)
         return state['history'],panel,status,state
 
@@ -112,25 +115,30 @@ def build_app():
         state=gr.State(None)
         with gr.Row(elem_id='topbar'):
             gr.HTML(HEADER)
+            gr.HTML(VIEW_SWITCH,elem_id='view-switch')
             reset=gr.Button('New chat',icon=None,size='sm',elem_id='reset')
-        chat=gr.Chatbot(show_label=False,type='messages',height='calc(100vh - 290px)',min_height=360,
-                        placeholder=EMPTY_CONVERSATION,container=False,sanitize_html=False,allow_tags=False,
-                        elem_id='conversation')
-        with gr.Column(elem_id='composer-wrap'):
-            gr.HTML(COMPOSER)
-            status=gr.Markdown('',elem_id='session-status')
+        with gr.Row(elem_id='workspace',equal_height=False):
+            with gr.Column(elem_id='convo-col',scale=2,min_width=0):
+                chat=gr.Chatbot(show_label=False,type='messages',height='calc(100vh - 270px)',min_height=360,
+                                placeholder=EMPTY_CONVERSATION,container=False,sanitize_html=False,allow_tags=False,
+                                elem_id='conversation')
+                with gr.Column(elem_id='composer-wrap'):
+                    gr.HTML(COMPOSER)
+                    status=gr.Markdown('',elem_id='session-status')
+            # Consumer view hides this column and Judge view shows it; both are CSS, so nothing re-renders on a switch.
+            with gr.Column(elem_id='details',scale=1,min_width=0):
+                with gr.Row(elem_id='ins-toolbar'):
+                    gr.HTML('<h3 class="ins-panel-title">Behind the answer</h3><p class="ins-intro">How the latest reply was made: '
+                            'what the agent heard, every tool it called and the knowledge-base chunks it retrieved and cited. '
+                            'Verification details are redacted.</p>')
+                    inspect=gr.Button('Preview retrieval for typed text',size='sm',elem_id='inspect')
+                panel=gr.HTML(inspector.render(),elem_id='inspector')
         # The composer is custom HTML; these hidden fields carry its text or recording to Python.
         with gr.Group(elem_id='bridge'):
             bridge_text=gr.Textbox(elem_id='bridge-text',show_label=False)
             bridge_audio=gr.Textbox(elem_id='bridge-audio',show_label=False)
             bridge_send=gr.Button('send',elem_id='bridge-send')
-        with gr.Accordion('Behind the scenes',open=False,elem_id='details'):
-            with gr.Row(elem_id='ins-toolbar'):
-                gr.HTML('<p class="ins-intro">How the latest reply was made: what the agent heard, the knowledge-base '
-                        'chunks it retrieved and cited, and every tool it called. Verification details are redacted.</p>')
-                inspect=gr.Button('Preview retrieval for typed text',size='sm',elem_id='inspect')
-            panel=gr.HTML(inspector.render(),elem_id='inspector')
-        gr.Markdown('Synthetic dataset · Reference date 20 October 2026 · VoiceOps 2026',elem_id='app-footer')
+        gr.Markdown('Gnani speech · ZentroMart synthetic data · Reference date 20 October 2026',elem_id='app-footer')
         def inspect_evidence(question):
             from zentro.retriever import Retriever
             if not (question or '').strip(): return gr.skip(),'Type a question in the message box first, then preview retrieval.'
