@@ -3,6 +3,8 @@
 Extreme: 48/61 before fixes → 56/61 after.
 Red-team: 35/50 before fixes (first run; harness bug counted as failures) → 45/50 after.
 
+The final rerun on the submitted code scored 57/61 and 47/50 (`benchmark_extreme.md`, `benchmark_redteam.md`); those are the numbers in report.pdf.
+
 Every case that failed at least once is listed: what was asked, what the bot said before and after the fixes, what it should have said, and the verdict.
 
 ## Extreme benchmark (61 scenarios)
