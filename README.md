@@ -2,7 +2,9 @@
 
 A voice support agent for a synthetic store. It listens (Gnani STT), answers from the policy documents with citations, checks orders after verifying the caller, hands over to a human when policy requires, and speaks the reply (Gnani TTS). "Today" is fixed at 20 October 2026.
 
-**Live demo:** https://aryabysani--voiceops-web.us-east.modal.run (first load can take a minute)
+- **Repository:** https://github.com/aryacooks/voiceops
+- **Live prototype:** https://aryabysani--voiceops-web.us-east.modal.run (first load can take a minute)
+- **Submitted by:** Arya Bysani · aryabysani@gmail.com · aryab.in
 
 ## Results
 
