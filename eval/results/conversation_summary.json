@@ -2,8 +2,8 @@
   "conversations": 23,
   "turns": 96,
   "scored_turns": 96,
-  "correctness": 0.8125,
-  "decision_correct": 0.9270833333333334,
-  "tool_recall": 0.9814814814814815,
-  "evidence_recall": 0.8888888888888888
+  "correctness": 0.8854166666666666,
+  "decision_correct": 0.9375,
+  "tool_recall": 1.0,
+  "evidence_recall": 0.9097222222222223
 }

@@ -8,11 +8,11 @@ A voice support agent for a synthetic store. It listens (Gnani STT), answers fro
 
 | 52 practice questions | Step 1 prompt only | Step 2 RAG | Step 3 agent |
 | --- | ---: | ---: | ---: |
-| Correct | 5.8% | 76.9% | **90.4%** |
-| Evidence recall@5 | – | 0.745 | **0.904** |
-| "I don't know" when unanswerable | 60% | 60% | **100%** |
+| Correct | 5.8% | 78.8% | **90.4%** |
+| Right policy sections retrieved | – | 0.770 | **0.858** |
+| Unanswerable questions handled correctly | 1/5 | 5/5 | **5/5** |
 
-23 practice conversations: 92.7% correct decisions, 98.1% expected tool calls. Details in `report.pdf` and `eval/results/`.
+23 practice conversations (96 turns): 93.8% right action, 88.5% fully correct replies, 100% expected tool calls. Details in `report.pdf` and `eval/results/`.
 
 ## Setup
 
