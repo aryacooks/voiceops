@@ -1,13 +1,11 @@
 /** Print the four-page canonical report and reject page overflow before export. */
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
 const {pathToFileURL} = require('url');
 
 function playwright() {
   const roots = [process.cwd()];
   if (process.env.PLAYWRIGHT_NODE_MODULES) roots.push(process.env.PLAYWRIGHT_NODE_MODULES);
-  roots.push(path.join(os.homedir(), '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules'));
   try { return require(require.resolve('playwright', {paths: roots})); }
   catch { throw new Error('Install Playwright for the report build, or set PLAYWRIGHT_NODE_MODULES. See report/BUILD.md.'); }
 }

@@ -19,11 +19,6 @@ def finalize(output: Path):
     try:
         from pypdf import PdfReader, PdfWriter
     except ModuleNotFoundError:
-        bundled = Path.home() / '.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3'
-        if bundled.is_file() and bundled.resolve() != Path(sys.executable).resolve():
-            subprocess.run([str(bundled), str(Path(__file__).resolve()), '--finalize-only',
-                            '--output', str(output)], check=True)
-            return
         raise SystemExit('Report metadata checks require pypdf. Run: uv run --with pypdf scripts/build_report.py')
     reader = PdfReader(output)
     if len(reader.pages) != 4:
