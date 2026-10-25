@@ -206,6 +206,13 @@ def test_agent_files_ticket_when_trigger_holds_and_model_does_not():
     calm=Agent(retriever=Search(),complete=lambda *a,**k:ChatCompletionMessage(role='assistant',content='Returns are free [RET-6].'),rewrite=None)
     assert not any(c['name']=='create_ticket' for c in calm.respond("I don't need a human, just tell me about returns")['tool_calls'])
 
+def test_record_triggers_wait_for_the_customers_issue():
+    agent=Agent(retriever=Search(),complete=lambda *a,**k:None,rewrite=None)
+    agent.adapter.verified_orders['48196636']={'contacts_last_7_days':2}; agent.adapter.current_order='48196636'
+    assert agent.triggers('the last four digits are 4521',identity_turn=True)==[]
+    assert {t['rule'] for t in agent.triggers("this is the third time I'm calling",identity_turn=False)}=={'ESC-1 #4'}
+    assert agent.triggers('I lost my phone',identity_turn=True)==[]
+
 def test_calculator_numbers_come_from_the_kb(tmp_path,monkeypatch):
     import importlib,shutil
     import zentro.config,zentro.rules

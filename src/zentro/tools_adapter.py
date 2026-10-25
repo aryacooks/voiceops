@@ -12,7 +12,7 @@ def string(description): return {'type':'string','description':description}
 TOOLS = [
 function('search_kb','Retrieve policy evidence before every policy statement.',{'query':string('Search query with context')},['query']),
 function('lookup_order','Identity-gated order lookup; proof MUST have been supplied by caller.',
- {'order_id':string('8 digit order ID'),'phone_last4':string('Caller supplied 4 digits'),'pincode':string('Caller supplied delivery pincode')},['order_id']),
+ {'order_id':string('Order ID exactly as the caller gave it'),'phone_last4':string('Caller supplied 4 digits'),'pincode':string('Caller supplied delivery pincode')},['order_id']),
 function('create_ticket','Create synthetic human handover. Confirm only on created=True.',
  {'summary':string('Issue, checks and reason, at least 20 characters'),'reason':string('Escalation reason')},['summary']),
 function('date_calc','Deterministic arithmetic. Start excluded, today=2026-10-20. Return deadline = add_calendar_days(delivery date, window). Refund arrival = add_business_days(initiation date, min and max).',

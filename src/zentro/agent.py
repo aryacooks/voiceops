@@ -98,11 +98,17 @@ class Agent:
         self.issue=''
         self.language='en-IN'
         self.adapter=ToolAdapter(self.retriever)
-    def enforce_escalation(self,text):
+    def triggers(self,text,identity_turn):
+        found=escalation_triggers(text+' '+self.issue,self.adapter.verified_orders.get(self.adapter.current_order))
+        # Repeat contacts (#4) and late refunds (#5) concern the customer's issue, so they wait until the customer has
+        # said something besides the verification detail; otherwise verifying alone would file a ticket.
+        if identity_turn and not self.issue: found=[t for t in found if t['rule'] not in ('ESC-1 #4','ESC-1 #5')]
+        return found
+    def enforce_escalation(self,text,identity_turn):
         """ESC-1 triggers are facts, not judgement: if one holds and no handover exists, file the ticket ourselves."""
         adapter=self.adapter
         if adapter.tickets or adapter.ticket_uncertain or any(c['name']=='create_ticket' for c in self.last_raw_calls): return []
-        triggers=escalation_triggers(text+' '+self.issue,adapter.verified_orders.get(adapter.current_order))
+        triggers=self.triggers(text,identity_turn)
         if not triggers: return []
         reasons='; '.join(f"{t['rule']}: {t['reason']}" for t in triggers)
         summary=f"Automatic handover. Issue: {self.issue or adapter.sanitize(text)[:300]}. Order: {adapter.current_order or 'none given'} "\
@@ -127,7 +133,7 @@ class Agent:
         # Seven slots: the KB-00 rules attached to most results would otherwise crowd policy out of the top five.
         chunks=self.retriever.search(text,k=7,rewrite=query) if query else self.retriever.search(text,k=7)
         calls=[audit_call('search_kb',{'query':self.adapter.sanitize(text),'rewritten_query':self.adapter.sanitize(query)},{'chunks':chunks})]
-        triggers=escalation_triggers(text+' '+self.issue,self.adapter.verified_orders.get(self.adapter.current_order))
+        triggers=self.triggers(text,identity_turn)
         context={'escalation_required':triggers,'state':self.adapter.public_state(),'verified_order':self.adapter.order_record(),'tickets_created_this_session':sorted(self.adapter.tickets),'summary':self.summary,'issue':self.issue,'language':self.language,'evidence':chunks}
         messages=[{'role':'system','content':AGENT+'\nTrusted session context: '+json.dumps(context,ensure_ascii=False)}]
         for turn in self.turns[-12:]:
@@ -166,7 +172,18 @@ class Agent:
                 messages.append({'role':'tool','tool_call_id':call.id,'content':json.dumps(result,ensure_ascii=False)})
         if not reply:
             reply="I couldn't complete the checks for that request. Could you rephrase the issue?"
-        calls+=self.enforce_escalation(text)
+        forced=self.enforce_escalation(text,identity_turn)
+        calls+=forced
+        filed=[c for c in self.last_raw_calls if c['name']=='create_ticket' and c['result'].get('created')]
+        if forced and filed:
+            # The draft never mentioned the handover, so let the model say it in the customer's language, with the reason.
+            ticket=filed[-1]
+            messages+=[{'role':'assistant','content':reply},
+                       {'role':'system','content':f"A handover ticket {ticket['result']['ticket_id']} was just filed because "
+                        f"{ticket['arguments']['reason']}. Rewrite your reply in the same language: keep its facts, then say "
+                        "a human colleague will contact them about this, why, and give the exact ticket ID."}]
+            try: reply=self.complete(messages).content or reply
+            except Exception: pass
         said=' '.join([t['user'] for t in self.turns]+[self.adapter.sanitize(text)])
         if ungrounded(reply,chunks,said) and not any(c['result'].get('verified') or c['result'].get('created') or c['name'] in CALCULATORS for c in calls):
             reply=IDK
