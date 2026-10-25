@@ -7,7 +7,7 @@ from zentro.dates import add_business_days,date_calc
 from zentro.kb import load_chunks
 from zentro.tools_adapter import ToolAdapter,redact
 from zentro.agent import Agent,guard_reply
-from zentro.speech import normalize_speech,usable_transcript
+from zentro.speech import normalize_speech,usable_transcript,read_audio
 from zentro.config import DATASET_DIR
 from judge import expected_tools,evidence_recall
 
@@ -244,3 +244,7 @@ def test_inspector_tells_a_request_for_proof_from_a_failed_check():
     failed=audit_call('lookup_order',{'order_id':'18599253','phone_last4':'1234'},{'verified':False,'verification_required':True})
     assert failed['arguments']['phone_last4']=='[redacted]'
     assert tool_result('lookup_order',failed['arguments'],failed['result'])==('Verification detail did not match','bad')
+
+def test_undecodable_audio_reads_as_no_speech(tmp_path):
+    broken=tmp_path/'broken.wav'; broken.write_bytes(b'not audio at all'*64)
+    assert read_audio(broken) is None

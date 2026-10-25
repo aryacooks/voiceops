@@ -7,6 +7,7 @@ import time
 from datetime import date
 from pathlib import Path
 from pydub import AudioSegment, silence
+from pydub.exceptions import CouldntDecodeError
 from .config import TODAY
 
 REPEAT = "Sorry, I didn't catch that. Could you say it again?"
@@ -32,6 +33,13 @@ def normalize_speech(text):
     text=re.sub(r'\s+',' ',text)
     return re.sub(r'\s+([.,;:!?])',r'\1',text).strip()
 
+def read_audio(path):
+    """16 kHz mono clip, or None when the file is not decodable audio (the caller then gets REPEAT, spoken)."""
+    try: return AudioSegment.from_file(path).set_frame_rate(16000).set_channels(1).set_sample_width(2)
+    except CouldntDecodeError:
+        logging.warning('Could not decode %s; treating it as unclear audio',Path(path).name)
+        return None
+
 def retry(call):
     for attempt in range(3):
         try: return call()
@@ -50,7 +58,8 @@ class Speech:
         self.stt=GnaniSTTClient(api_key=key)
         self.tts=GnaniTTSClient(api_key=key)
     def transcribe(self,path):
-        audio=AudioSegment.from_file(path).set_frame_rate(16000).set_channels(1).set_sample_width(2)
+        audio=read_audio(path)
+        if audio is None: return ''
         # Prefer pauses near the boundary, always enforce <=55s including continuous speech.
         segments=[]
         start=0
