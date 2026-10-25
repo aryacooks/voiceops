@@ -166,6 +166,11 @@ def redact(text,secrets=()):
     text=re.sub(r'(?<![0-9A-Za-z])(?:\+91[ -]?)?(?:\d{10}|\d{5}[ -]\d{5}|\d{3}[ -]\d{3}[ -]\d{4})(?![0-9A-Za-z])','[phone redacted]',text)
     return text
 
+def plain_order_id(args):
+    """The caller's spacing ("1859 9253") is dropped; anything that is not digits is left for lookup_order to reject."""
+    compact=re.sub(r'[\s-]','',str(args.get('order_id','')))
+    return args|{'order_id':compact} if compact.isdigit() else args
+
 def audit_call(name,args,result):
     public_args={k:('[redacted]' if k in ('phone_last4','pincode') and name=='lookup_order' else redact(v) if isinstance(v,str) else v) for k,v in args.items()}
     if name=='lookup_order': public_result={k:v for k,v in result.items() if k in ('found','verified','verification_required','locked','error','message')}

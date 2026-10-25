@@ -2,7 +2,7 @@ import json
 import re
 from . import llm
 from .prompts import AGENT, GROUNDING, BASE
-from .tools_adapter import ToolAdapter, TOOLS, audit_call, redact
+from .tools_adapter import ToolAdapter, TOOLS, audit_call, plain_order_id, redact
 from .retriever import Retriever
 from .rules import escalation_triggers
 
@@ -154,6 +154,7 @@ class Agent:
             for call in message.tool_calls:
                 try:
                     args=json.loads(call.function.arguments)
+                    if call.function.name=='lookup_order': args=plain_order_id(args)
                     result=self.adapter.execute(call.function.name,args)
                 except (ValueError,TypeError,KeyError,OSError) as exc:
                     args={}

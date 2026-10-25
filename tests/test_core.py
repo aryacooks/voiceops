@@ -228,3 +228,9 @@ def test_customer_stated_figures_can_be_repeated_back():
     from zentro.agent import ungrounded
     assert not ungrounded('You said the product was worth ₹13,000.',[],said='the product worth 13000 is damaged')
     assert ungrounded('The product was worth ₹15,000.',[],said='the product worth 13000 is damaged')
+
+def test_logged_order_id_drops_the_callers_spacing():
+    from zentro.tools_adapter import plain_order_id
+    assert plain_order_id({'order_id':'1859 9253','pincode':'560001'})=={'order_id':'18599253','pincode':'560001'}
+    assert plain_order_id({'order_id':'1859-925'})['order_id']=='1859925'
+    assert plain_order_id({'order_id':'ORD 1859'})['order_id']=='ORD 1859'
